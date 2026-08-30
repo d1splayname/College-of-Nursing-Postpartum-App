@@ -4,9 +4,9 @@ class TermsAndConditionsScreen extends StatefulWidget {
   final Color themeColor;
 
   const TermsAndConditionsScreen({
-    Key? key,
+    super.key,
     required this.themeColor,
-  }) : super(key: key);
+  });
 
   @override
   State<TermsAndConditionsScreen> createState() =>
@@ -507,7 +507,7 @@ class _TermsAndConditionsScreenState extends State<TermsAndConditionsScreen> {
             style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.bold,
-              color: widget.themeColor.withOpacity(0.8),
+              color: widget.themeColor.withValues(alpha: 0.8),
             ),
           ),
           const SizedBox(height: 12),

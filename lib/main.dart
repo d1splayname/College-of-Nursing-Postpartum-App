@@ -7,7 +7,7 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
 
 // Welcome Screen
 class WelcomeScreen extends StatelessWidget {
-  const WelcomeScreen({Key? key}) : super(key: key);
+  const WelcomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +58,7 @@ class WelcomeScreen extends StatelessWidget {
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFF9C88D9).withOpacity(0.3),
+                        color: const Color(0xFF9C88D9).withValues(alpha: 0.3),
                         blurRadius: 20,
                         offset: const Offset(0, 10),
                       ),
@@ -150,7 +150,7 @@ class WelcomeScreen extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.5),
+            color: Colors.white.withValues(alpha: 0.3),
             borderRadius: BorderRadius.circular(10),
           ),
           child: Icon(
@@ -176,7 +176,7 @@ class WelcomeScreen extends StatelessWidget {
 
 // Setup Screen (Updated with gender and color selection)
 class SetupScreen extends StatefulWidget {
-  const SetupScreen({Key? key}) : super(key: key);
+  const SetupScreen({super.key});
 
   @override
   State<SetupScreen> createState() => _SetupScreenState();
@@ -393,7 +393,7 @@ class _SetupScreenState extends State<SetupScreen> {
                   ),
                 ),
               );
-            }).toList(),
+            }),
             
             const SizedBox(height: 40),
             
@@ -462,7 +462,7 @@ class _SetupScreenState extends State<SetupScreen> {
       child: Container(
         padding: const EdgeInsets.all(15),
         decoration: BoxDecoration(
-          color: isSelected ? color.withOpacity(0.3) : Colors.white,
+          color: isSelected ? color.withValues(alpha: 0.3) : Colors.white,
           borderRadius: BorderRadius.circular(15),
           border: Border.all(
             color: isSelected ? color : Colors.grey.shade300,
@@ -495,12 +495,12 @@ class PrivacyScreen extends StatefulWidget {
   final Color themeColor;
 
   const PrivacyScreen({
-    Key? key,
+    super.key,
     required this.motherName,
     required this.babyGender,
     required this.dueDate,
     required this.themeColor,
-  }) : super(key: key);
+  });
 
   @override
   State<PrivacyScreen> createState() => _PrivacyScreenState();
@@ -511,8 +511,8 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async => false,
+    return PopScope(
+      onPopInvokedWithResult: (didPop, result) async => false,
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.transparent,
@@ -552,7 +552,7 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.grey.withOpacity(0.1),
+                        color: Colors.grey.withValues(alpha: 0.1),
                         blurRadius: 10,
                         offset: const Offset(0, 5),
                       ),
@@ -616,7 +616,7 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
                 child: Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: widget.themeColor.withOpacity(0.1),
+                    color: widget.themeColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(color: widget.themeColor),
                   ),
@@ -756,12 +756,12 @@ class HomeScreen extends StatefulWidget {
   final Color themeColor;
 
   const HomeScreen({
-    Key? key,
+    super.key,
     required this.motherName,
     required this.babyGender,
     required this.dueDate,
     required this.themeColor,
-  }) : super(key: key);
+  });
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -797,7 +797,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final List<Widget> _screens = [
+    final List<Widget> screens = [
       DashboardScreen(
         motherName: widget.motherName,
         babyGender: widget.babyGender,
@@ -816,12 +816,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
     backgroundColor: _getBackgroundColor(_currentThemeColor),
-      body: _screens[_selectedIndex],
+      body: screens[_selectedIndex],
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           boxShadow: [
             BoxShadow(
-              color: _currentThemeColor.withOpacity(0.2),
+              color: _currentThemeColor.withValues(alpha: 0.2),
               blurRadius: 10,
               offset: const Offset(0, -5),
             ),
@@ -872,11 +872,11 @@ class DashboardScreen extends StatelessWidget {
   final Color themeColor;
 
   const DashboardScreen({
-    Key? key,
+    super.key,
     required this.motherName,
     required this.babyGender,
     required this.themeColor,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -921,7 +921,7 @@ class DashboardScreen extends StatelessWidget {
                     'Last Sleep',
                     '3h ago',
                     Icons.bedtime,
-                    themeColor.withOpacity(0.7),
+                    themeColor.withValues(alpha: 0.7),
                   ),
                 ),
               ],
@@ -949,7 +949,7 @@ class DashboardScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: themeColor.withOpacity(0.3),
+                color: themeColor.withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Row(
@@ -982,7 +982,7 @@ class DashboardScreen extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: color.withOpacity(0.3),
+            color: color.withValues(alpha: 0.3),
             blurRadius: 10,
             offset: const Offset(0, 5),
           ),
@@ -1043,10 +1043,10 @@ class BabyTrackerScreen extends StatefulWidget {
   final Color themeColor;
 
   const BabyTrackerScreen({
-    Key? key,
+    super.key,
     required this.babyGender,
     required this.themeColor,
-  }) : super(key: key);
+  });
 
   @override
   State<BabyTrackerScreen> createState() => _BabyTrackerScreenState();
@@ -1060,8 +1060,8 @@ class _BabyTrackerScreenState extends State<BabyTrackerScreen> {
     super.initState();
     activities = [
       {'type': 'Feeding', 'time': '2 hours ago', 'icon': Icons.restaurant, 'color': widget.themeColor},
-      {'type': 'Diaper', 'time': '1 hour ago', 'icon': Icons.child_care, 'color': widget.themeColor.withOpacity(0.7)},
-      {'type': 'Sleep', 'time': '3 hours ago', 'icon': Icons.bedtime, 'color': widget.themeColor.withOpacity(0.5)},
+      {'type': 'Diaper', 'time': '1 hour ago', 'icon': Icons.child_care, 'color': widget.themeColor.withValues(alpha: 0.7)},
+      {'type': 'Sleep', 'time': '3 hours ago', 'icon': Icons.bedtime, 'color': widget.themeColor.withValues(alpha: 0.5)},
     ];
   }
 
@@ -1104,13 +1104,13 @@ class _BabyTrackerScreenState extends State<BabyTrackerScreen> {
                 _buildActionButton(
                   'Diaper',
                   Icons.child_care,
-                  widget.themeColor.withOpacity(0.7),
+                  widget.themeColor.withValues(alpha: 0.7),
                   () => _addActivity('Diaper', Icons.child_care),
                 ),
                 _buildActionButton(
                   'Sleep',
                   Icons.bedtime,
-                  widget.themeColor.withOpacity(0.5),
+                  widget.themeColor.withValues(alpha: 0.5),
                   () => _addActivity('Sleep', Icons.bedtime),
                 ),
               ],
@@ -1141,7 +1141,7 @@ class _BabyTrackerScreenState extends State<BabyTrackerScreen> {
                       borderRadius: BorderRadius.circular(15),
                       boxShadow: [
                         BoxShadow(
-                          color: (activity['color'] as Color).withOpacity(0.2),
+                          color: (activity['color'] as Color).withValues(alpha: 0.2),
                           blurRadius: 8,
                           offset: const Offset(0, 3),
                         ),
@@ -1152,7 +1152,7 @@ class _BabyTrackerScreenState extends State<BabyTrackerScreen> {
                         Container(
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
-                            color: (activity['color'] as Color).withOpacity(0.3),
+                            color: (activity['color'] as Color).withValues(alpha: 0.3),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Icon(
@@ -1202,7 +1202,7 @@ class _BabyTrackerScreenState extends State<BabyTrackerScreen> {
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.3),
+          color: color.withValues(alpha: 0.3),
           borderRadius: BorderRadius.circular(20),
         ),
         child: Column(
@@ -1246,7 +1246,7 @@ class _BabyTrackerScreenState extends State<BabyTrackerScreen> {
 class SelfCareScreen extends StatefulWidget {
   final Color themeColor;
 
-  const SelfCareScreen({Key? key, required this.themeColor}) : super(key: key);
+  const SelfCareScreen({super.key, required this.themeColor});
 
   @override
   State<SelfCareScreen> createState() => _SelfCareScreenState();
@@ -1303,7 +1303,7 @@ class _SelfCareScreenState extends State<SelfCareScreen> {
                     padding: const EdgeInsets.all(15),
                     decoration: BoxDecoration(
                       color: isSelected
-                          ? widget.themeColor.withOpacity(0.3)
+                          ? widget.themeColor.withValues(alpha: 0.3)
                           : Colors.white,
                       borderRadius: BorderRadius.circular(15),
                       border: Border.all(
@@ -1359,25 +1359,25 @@ class _SelfCareScreenState extends State<SelfCareScreen> {
                     'Nutrition',
                     'Have a healthy snack',
                     Icons.restaurant_menu,
-                    widget.themeColor.withOpacity(0.8),
+                    widget.themeColor.withValues(alpha: 0.8),
                   ),
                   _buildReminderCard(
                     'Rest',
                     'Take a 15-minute break',
                     Icons.chair,
-                    widget.themeColor.withOpacity(0.6),
+                    widget.themeColor.withValues(alpha: 0.6),
                   ),
                   _buildReminderCard(
                     'Movement',
                     'Gentle stretching',
                     Icons.self_improvement,
-                    widget.themeColor.withOpacity(0.4),
+                    widget.themeColor.withValues(alpha: 0.4),
                   ),
                   _buildReminderCard(
                     'Connection',
                     'Call a friend or family',
                     Icons.phone,
-                    widget.themeColor.withOpacity(0.5),
+                    widget.themeColor.withValues(alpha: 0.5),
                   ),
                 ],
               ),
@@ -1387,7 +1387,7 @@ class _SelfCareScreenState extends State<SelfCareScreen> {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: widget.themeColor.withOpacity(0.3),
+                color: widget.themeColor.withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Column(
@@ -1427,7 +1427,7 @@ class _SelfCareScreenState extends State<SelfCareScreen> {
         borderRadius: BorderRadius.circular(15),
         boxShadow: [
           BoxShadow(
-            color: color.withOpacity(0.2),
+            color: color.withValues(alpha: 0.2),
             blurRadius: 8,
             offset: const Offset(0, 3),
           ),
@@ -1438,7 +1438,7 @@ class _SelfCareScreenState extends State<SelfCareScreen> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.3),
+              color: color.withValues(alpha: 0.3),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(icon, color: color, size: 25),
@@ -1481,12 +1481,12 @@ class SettingsScreen extends StatelessWidget {
   final Function(Color) onThemeColorChanged;
 
   const SettingsScreen({
-    Key? key,
+    super.key,
     required this.motherName,
     required this.babyGender,
     required this.themeColor,
     required this.onThemeColorChanged,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -1527,7 +1527,7 @@ class SettingsScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
-                    color: themeColor.withOpacity(0.2),
+                    color: themeColor.withValues(alpha: 0.2),
                     blurRadius: 10,
                     offset: const Offset(0, 5),
                   ),
@@ -1794,7 +1794,7 @@ class SettingsScreen extends StatelessWidget {
           borderRadius: BorderRadius.circular(15),
           boxShadow: [
             BoxShadow(
-              color: color.withOpacity(0.1),
+              color: color.withValues(alpha: 0.1),
               blurRadius: 8,
               offset: const Offset(0, 3),
             ),
@@ -1805,7 +1805,7 @@ class SettingsScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: color.withOpacity(0.2),
+                color: color.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(icon, color: color, size: 25),

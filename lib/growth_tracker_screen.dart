@@ -4,9 +4,9 @@ class GrowthTrackerScreen extends StatefulWidget {
   final Color themeColor;
   
   const GrowthTrackerScreen({
-    Key? key,
+    super.key,
     required this.themeColor,
-  }) : super(key: key);
+  });
 
   @override
   State<GrowthTrackerScreen> createState() => _GrowthTrackerScreenState();
@@ -133,7 +133,7 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
-                      color: widget.themeColor.withOpacity(0.2),
+                      color: widget.themeColor.withValues(alpha: 0.2),
                       blurRadius: 10,
                       offset: const Offset(0, 5),
                     ),
@@ -146,7 +146,7 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
                       width: 160,
                       height: 160,
                       decoration: BoxDecoration(
-                        color: widget.themeColor.withOpacity(0.1),
+                        color: widget.themeColor.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       alignment: Alignment.center,
@@ -176,7 +176,7 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
                         vertical: 8,
                       ),
                       decoration: BoxDecoration(
-                        color: widget.themeColor.withOpacity(0.2),
+                        color: widget.themeColor.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
@@ -251,7 +251,7 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
                   borderRadius: BorderRadius.circular(15),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.grey.withOpacity(0.1),
+                      color: Colors.grey.withValues(alpha: 0.1),
                       blurRadius: 8,
                       offset: const Offset(0, 3),
                     ),
@@ -321,7 +321,7 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: widget.themeColor.withOpacity(0.1),
+                  color: widget.themeColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(15),
                 ),
                 child: Column(
