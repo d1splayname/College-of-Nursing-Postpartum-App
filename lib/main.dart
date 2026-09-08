@@ -184,6 +184,8 @@ class SetupScreen extends StatefulWidget {
 
 class _SetupScreenState extends State<SetupScreen> {
   final TextEditingController _motherNameController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   DateTime? _dueDate;
   String? _selectedGender;
   Color? _selectedColor;
@@ -254,6 +256,57 @@ class _SetupScreenState extends State<SetupScreen> {
             
             const SizedBox(height: 25),
             
+            // Create Your Username
+            const Text(
+              'Username',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height:10),
+
+            TextField(
+              controller: _usernameController,
+              decoration: InputDecoration(
+                hintText: 'Create a Username',
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(15),
+                  borderSide: BorderSide.none,
+                ),
+                prefixIcon: const Icon(Icons.person_outline, color: Color(0xFF9C88D9)),
+              ),
+            ),
+            const SizedBox(height:25),
+
+            // Password 
+            const Text(
+              'Choose a Password',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height:25),
+
+            TextField(
+              controller: _passwordController,
+              obscureText: true,
+              decoration: InputDecoration(
+                hintText: 'Enter a Strong Password',
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(15),
+                  borderSide: BorderSide.none,
+                ),
+                prefixIcon: const Icon(Icons.lock_outline, color: Color(0xFF9C88D9)),
+              ),
+            ),
+            const SizedBox(height:25),
+
             // Baby's Gender
             const Text(
               'Baby\'s Gender',
@@ -403,6 +456,8 @@ class _SetupScreenState extends State<SetupScreen> {
               child: ElevatedButton(
                 onPressed: () {
                   if (_motherNameController.text.isEmpty ||
+                      _usernameController.text.isEmpty ||
+                      _passwordController.text.isEmpty ||
                       _selectedGender == null ||
                       _dueDate == null ||
                       _selectedColor == null) {
