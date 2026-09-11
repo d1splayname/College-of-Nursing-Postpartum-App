@@ -72,7 +72,14 @@ class _LoginScreenState extends State<LoginScreen> {
 
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const WelcomeScreen()),
+        MaterialPageRoute(
+          builder: (context) => HomeScreen(
+            motherName: response.user.username,
+            babyGender: 'Neutral',
+            dueDate: DateTime.now(),
+            themeColor: const Color(0xFF9C88D9),
+          ),
+        ),
       );
     } on ApiException catch (error) {
       if (!mounted) return;
@@ -221,7 +228,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       );
                     },
                     child: const Text(
-                      'Continue to setup',
+                      'Create an account',
                       style: TextStyle(
                         color: Color(0xFF9C88D9),
                         fontWeight: FontWeight.w600,
@@ -689,6 +696,8 @@ class _SetupScreenState extends State<SetupScreen> {
                     MaterialPageRoute(
                       builder: (context) => PrivacyScreen(
                         motherName: _motherNameController.text,
+                        username: _usernameController.text,
+                        password: _passwordController.text,
                         babyGender: _selectedGender!,
                         dueDate: _dueDate!,
                         themeColor: _selectedColor!,
@@ -759,6 +768,8 @@ class _SetupScreenState extends State<SetupScreen> {
 // Privacy & Terms Screen
 class PrivacyScreen extends StatefulWidget {
   final String motherName;
+  final String username;
+  final String password;
   final String babyGender;
   final DateTime dueDate;
   final Color themeColor;
@@ -766,6 +777,8 @@ class PrivacyScreen extends StatefulWidget {
   const PrivacyScreen({
     super.key,
     required this.motherName,
+    required this.username,
+    required this.password,
     required this.babyGender,
     required this.dueDate,
     required this.themeColor,
@@ -777,6 +790,49 @@ class PrivacyScreen extends StatefulWidget {
 
 class _PrivacyScreenState extends State<PrivacyScreen> {
   bool _agreedToTerms = false;
+  bool _isCreatingAccount = false;
+
+  Future<void> _createAccount() async {
+    setState(() {
+      _isCreatingAccount = true;
+    });
+    try {
+      await AuthService().signup(
+        name: widget.motherName,
+        username: widget.username,
+        password: widget.password,
+      );
+      if (!mounted) return;
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+          builder: (context) => HomeScreen(
+            motherName: widget.motherName,
+            babyGender: widget.babyGender,
+            dueDate: widget.dueDate,
+            themeColor: widget.themeColor,
+          ),
+        ),
+        (route) => false,
+      );
+    } on ApiException catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(error.message)),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not create account.')),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isCreatingAccount = false;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -909,21 +965,8 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: _agreedToTerms
-                      ? () {
-                          Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => HomeScreen(
-                                motherName: widget.motherName,
-                                babyGender: widget.babyGender,
-                                dueDate: widget.dueDate,
-                                themeColor: widget.themeColor,
-                              ),
-                            ),
-                            (route) => false,
-                          );
-                        }
+                  onPressed: _agreedToTerms && !_isCreatingAccount
+                      ? _createAccount
                       : null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: widget.themeColor,
@@ -935,8 +978,8 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
                     elevation: 5,
                     disabledBackgroundColor: Colors.grey[300],
                   ),
-                  child: const Text(
-                    'Start My Journey',
+                  child: Text(
+                    _isCreatingAccount ? 'Creating Account...' : 'Create Account',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -1926,11 +1969,11 @@ class SettingsScreen extends StatelessWidget {
                             child: const Text('Cancel'),
                           ),
                           ElevatedButton(
-                            onPressed: () {
-                              // Clear navigation stack and go to welcome
+                            onPressed: () async {
+                              await AuthService().logout();
                               Navigator.of(context).pushAndRemoveUntil(
                                 MaterialPageRoute(
-                                  builder: (context) => const WelcomeScreen(),
+                                  builder: (context) => const LoginScreen(),
                                 ),
                                 (route) => false,
                               );

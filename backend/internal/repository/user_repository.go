@@ -49,11 +49,11 @@ func (r *UserRepository) UpdateLastLogin(userID int64) error {
 	return err
 }
 
-func (r *UserRepository) CreateUser(username, passwordHash string) (int64, error) {
+func (r *UserRepository) CreateUser(name, username, passwordHash string) (int64, error) {
 	result, err := r.DB.Exec(`
-		INSERT INTO `+"`user`"+` (username, password_hash, registered_time, active, is_admin)
-		VALUES (?, ?, NOW(), 1, 0)
-	`, username, passwordHash)
+		INSERT INTO `+"`user`"+` (name, username, password_hash, registered_time, active, is_admin)
+		VALUES (?, ?, ?, NOW(), 1, 0)
+	`, name, username, passwordHash)
 	if err != nil {
 		return 0, err
 	}
