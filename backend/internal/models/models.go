@@ -6,17 +6,23 @@ import (
 )
 
 type User struct {
-	ID            int64        `json:"id"`
-	Username      string       `json:"username"`
-	PasswordHash  string       `json:"-"`
-	RegisteredAt  time.Time    `json:"registered_time"`
-	LastLoginTime sql.NullTime `json:"last_login_time,omitempty"`
+	ID            int64          `json:"id"`
+	Username      string         `json:"username"`
+	PasswordHash  string         `json:"-"`
+	RegisteredAt  time.Time      `json:"registered_time"`
+	LastLoginTime sql.NullTime   `json:"last_login_time,omitempty"`
 	ResetPassword sql.NullString `json:"reset_password,omitempty"`
-	Active        bool         `json:"active"`
-	IsAdmin       bool         `json:"is_admin"`
+	Active        bool           `json:"active"`
+	IsAdmin       bool           `json:"is_admin"`
 }
 
 type LoginRequest struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+type SignupRequest struct {
+	Name     string `json:"name"`
 	Username string `json:"username"`
 	Password string `json:"password"`
 }
@@ -31,6 +37,6 @@ type PublicUser struct {
 }
 
 type LoginResponse struct {
-	Token string      `json:"token"`
-	User  PublicUser  `json:"user"`
+	Token string     `json:"token"`
+	User  PublicUser `json:"user"`
 }

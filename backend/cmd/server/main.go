@@ -22,12 +22,13 @@ func main() {
 
 	repo := &repository.UserRepository{DB: database}
 	authHandler := &handlers.AuthHandler{
-		Repo:     repo,
+		Repo:      repo,
 		JWTSecret: cfg.JWTSecret,
 	}
 
 	http.HandleFunc("/health", authHandler.Ping)
 	http.HandleFunc("/api/login", authHandler.Login)
+	http.HandleFunc("/api/signup", authHandler.Signup)
 	http.HandleFunc("/api/users", authHandler.GetUsers)
 
 	fmt.Printf("Server running on http://localhost:%s\n", cfg.Port)
