@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../auth_service.dart';
-import 'setup_screen.dart';
 import 'home_screen.dart';
 import '../terms_and_conditions.dart';
 
@@ -36,10 +35,19 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
       _isCreatingAccount = true;
     });
     try {
-      await AuthService().signup(
+      final authService = AuthService();
+      await authService.signup(
         name: widget.motherName,
         username: widget.username,
         password: widget.password,
+      );
+      await authService.saveProfile(
+        SessionProfile(
+          motherName: widget.motherName,
+          babyGender: widget.babyGender,
+          dueDate: widget.dueDate,
+          themeColor: widget.themeColor.toARGB32(),
+        ),
       );
       if (!mounted) return;
       Navigator.pushAndRemoveUntil(
