@@ -29,7 +29,8 @@ func main() {
 	http.HandleFunc("/health", authHandler.Ping)
 	http.HandleFunc("/api/login", authHandler.Login)
 	http.HandleFunc("/api/signup", authHandler.Signup)
-	http.HandleFunc("/api/users", authHandler.GetUsers)
+	http.HandleFunc("/api/session", authHandler.Session)
+	http.Handle("/api/users", authHandler.RequireAdmin(http.HandlerFunc(authHandler.GetUsers)))
 
 	fmt.Printf("Server running on http://localhost:%s\n", cfg.Port)
 	if err := http.ListenAndServe(":"+cfg.Port, nil); err != nil {

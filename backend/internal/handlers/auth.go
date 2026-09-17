@@ -3,6 +3,7 @@ package handlers
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"strings"
@@ -20,6 +21,23 @@ type AuthHandler struct {
 	JWTSecret string
 }
 
+func (h *AuthHandler) sessionClaims(r *http.Request) (*auth.Claims, error) {
+	token := ""
+	if cookie, err := r.Cookie("session"); err == nil {
+		token = cookie.Value
+	}
+	if token == "" {
+		authorization := r.Header.Get("Authorization")
+		if strings.HasPrefix(authorization, "Bearer ") {
+			token = strings.TrimSpace(strings.TrimPrefix(authorization, "Bearer "))
+		}
+	}
+	if token == "" {
+		return nil, fmt.Errorf("missing session")
+	}
+	return auth.ParseToken(h.JWTSecret, token)
+}
+
 func setCORS(w http.ResponseWriter) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
@@ -35,6 +53,54 @@ func setSessionCookie(w http.ResponseWriter, token string) {
 		SameSite: http.SameSiteLaxMode,
 		MaxAge:   24 * 60 * 60,
 	})
+}
+
+func (h *AuthHandler) RequireAdmin(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		setCORS(w)
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+
+		claims, err := h.sessionClaims(r)
+		if err != nil {
+			http.Error(w, "authentication required", http.StatusUnauthorized)
+			return
+		}
+		if !claims.IsAdmin {
+			http.Error(w, "admin access required", http.StatusForbidden)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
+}
+
+func (h *AuthHandler) Session(w http.ResponseWriter, r *http.Request) {
+	setCORS(w)
+	if r.Method == http.MethodOptions {
+		w.WriteHeader(http.StatusNoContent)
+		return
+	}
+	if r.Method != http.MethodGet {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	claims, err := h.sessionClaims(r)
+	if err != nil {
+		http.Error(w, "invalid or expired session", http.StatusUnauthorized)
+		return
+	}
+	user, err := h.Repo.GetByID(claims.UserID)
+	if err != nil || user == nil || !user.Active {
+		http.Error(w, "invalid or inactive session", http.StatusUnauthorized)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(map[string]models.PublicUser{"user": publicUser(user)})
 }
 
 func publicUser(user *models.User) models.PublicUser {
