@@ -110,7 +110,7 @@ def login(payload: LoginRequest, response: Response, db: Session = Depends(get_d
     user = db.scalar(select(User).where(User.username == payload.username))
     if user is None or not user.active or not verify_password(payload.password, user.password_hash):
         raise HTTPException(401, "invalid credentials")
-    user.last_login_time = datetime.utcnow()
+    user.last_login_time = datetime.now(timezone.utc)
     db.commit()
     token = create_token(user.id, user.username, user.is_admin)
     set_session_cookie(response, token)
