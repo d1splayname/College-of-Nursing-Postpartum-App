@@ -16,3 +16,29 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+
+## Setup Flutter
+
+Search up how to install flutter
+
+## Run Flutter
+
+```
+flutter run
+```
+
+## Install python (3 preferably)
+
+[https://www.python.org/downloads/](https://www.python.org/downloads/)
+
+## Run backend
+
+in a seperate terminal
+
+```
+cd backend
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+python main.py
+```
