@@ -26,6 +26,7 @@ app.add_middleware(
 )
 
 
+# ====== EXCEPTION HANDLERS ======
 @app.exception_handler(HTTPException)
 async def http_exception_handler(_, exc: HTTPException):
     return PlainTextResponse(str(exc.detail), status_code=exc.status_code)
@@ -36,6 +37,7 @@ async def validation_exception_handler(_, __):
     return PlainTextResponse("invalid JSON", status_code=status.HTTP_400_BAD_REQUEST)
 
 
+# ====== UTILITY FUNCTIONS ======
 def public_user(user: User) -> PublicUser:
     return PublicUser.model_validate(user)
 
@@ -74,11 +76,13 @@ def authenticated_user(
     return user
 
 
+# ====== HEALTH CHECK ENDPOINT ======
 @app.get("/health")
 def health() -> dict[str, str]:
     return {"status": "ok", "time": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")}
 
 
+# ====== AUTHENTICATION ENDPOINTS ======
 @app.post("/api/signup", response_model=LoginResponse, status_code=status.HTTP_201_CREATED)
 def signup(payload: SignupRequest, response: Response, db: Session = Depends(get_db)) -> LoginResponse:
     name = payload.name.strip()
@@ -96,8 +100,6 @@ def signup(payload: SignupRequest, response: Response, db: Session = Depends(get
         db.commit()
     except IntegrityError as exc:
         db.rollback()
-        if "username" in str(exc).lower() or "unique" in str(exc).lower():
-            raise HTTPException(409, "username is already registered") from None
         raise HTTPException(500, "failed to create account") from exc
     db.refresh(user)
     token = create_token(user.id, user.username, user.is_admin)
@@ -117,6 +119,7 @@ def login(payload: LoginRequest, response: Response, db: Session = Depends(get_d
     return LoginResponse(token=token, user=public_user(user))
 
 
+# ====== USER MANAGEMENT ENDPOINTS ======
 @app.get("/api/users", response_model=list[PublicUser])
 def users(db: Session = Depends(get_db)) -> list[PublicUser]:
     return [public_user(user) for user in db.scalars(select(User).order_by(User.id)).all()]
@@ -128,16 +131,7 @@ def session(user: User = Depends(authenticated_user)) -> SessionResponse:
 
 
 if __name__ == "__main__":
-    _port: int = 8080
-
-    if len(sys.argv) > 1:
-        if sys.argv[1] == "help":
-            print("Usage: python {sys.argv[0]} [OPTIONS]")
-            print(" dev     run in development mode (port 3999)")
-            print(" help    show this message")
-
-            exit(0)
-        if sys.argv[1] == "dev":
-            _port = 3999
-
-    uvicorn.run(app, host="localhost", port=_port)
+    if len(sys.argv) > 1 and sys.argv[1] == "dev":
+        uvicorn.run("main:app", host="localhost", port=8080, reload=True)
+    else:
+        uvicorn.run("main:app", host="localhost", port=8080, reload=False)
