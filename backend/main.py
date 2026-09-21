@@ -133,7 +133,7 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         if sys.argv[1] == "help":
             print("Usage: python {sys.argv[0]} [OPTIONS]")
-            print(" dev     run in development mode")
+            print(" dev     run in development mode (port 3999)")
             print(" help    show this message")
 
             exit(0)
