@@ -126,6 +126,7 @@ def users(db: Session = Depends(get_db)) -> list[PublicUser]:
 def session(user: User = Depends(authenticated_user)) -> SessionResponse:
     return SessionResponse(user=public_user(user))
 
+
 if __name__ == "__main__":
     _port: int = 8080
 
@@ -137,8 +138,6 @@ if __name__ == "__main__":
 
             exit(0)
         if sys.argv[1] == "dev":
-            print("Microservices: dev mode")
-
             _port = 3999
 
     uvicorn.run(app, host="localhost", port=_port)
