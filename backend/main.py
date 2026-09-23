@@ -14,7 +14,15 @@ from sqlalchemy.orm import Session
 
 from app.auth import create_token, decode_token, hash_password, verify_password
 from app.database import get_db
-from app.models import User
+
+# models
+from app.models.child import Child
+from app.models.event import Event
+from app.models.family_member import FamilyMember
+from app.models.family import Family
+from app.models.permissions import Permission
+from app.models.user import User
+
 from app.schemas import LoginRequest, LoginResponse, PublicUser, SessionResponse, SignupRequest
 
 app = FastAPI(title="Nursing AI API")
