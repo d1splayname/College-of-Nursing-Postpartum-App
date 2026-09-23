@@ -14,14 +14,10 @@ class ApiException implements Exception {
 class AuthUser {
   final String username;
 
-  const AuthUser({
-    required this.username,
-  });
+  const AuthUser({required this.username});
 
   factory AuthUser.fromJson(Map<String, dynamic> json) {
-    return AuthUser(
-      username: json['username'] as String? ?? '',
-    );
+    return AuthUser(username: json['username'] as String? ?? '');
   }
 }
 
@@ -29,10 +25,7 @@ class LoginResponse {
   final AuthUser user;
   final String token;
 
-  const LoginResponse({
-    required this.user,
-    required this.token,
-  });
+  const LoginResponse({required this.user, required this.token});
 
   factory LoginResponse.fromJson(Map<String, dynamic> json) {
     return LoginResponse(
@@ -65,11 +58,11 @@ class SessionProfile {
   }
 
   Map<String, dynamic> toJson() => {
-        'motherName': motherName,
-        'babyGender': babyGender,
-        'dueDate': dueDate.toIso8601String(),
-        'themeColor': themeColor,
-      };
+    'motherName': motherName,
+    'babyGender': babyGender,
+    'dueDate': dueDate.toIso8601String(),
+    'themeColor': themeColor,
+  };
 }
 
 class StoredSession {
@@ -152,7 +145,10 @@ class AuthService {
       }
       final decoded = jsonDecode(response.body) as Map<String, dynamic>;
       final result = LoginResponse.fromJson(decoded);
-      await _storage.write(key: _sessionCookieKey, value: 'session=${result.token}');
+      await _storage.write(
+        key: _sessionCookieKey,
+        value: 'session=${result.token}',
+      );
       return result;
     } on http.ClientException {
       throw const ApiException(
@@ -169,10 +165,7 @@ class AuthService {
   Future<void> logout() => _storage.delete(key: _sessionCookieKey);
 
   Future<void> saveProfile(SessionProfile profile) async {
-    await _storage.write(
-      key: _profileKey,
-      value: jsonEncode(profile.toJson()),
-    );
+    await _storage.write(key: _profileKey, value: jsonEncode(profile.toJson()));
   }
 
   Future<StoredSession?> restoreSession() async {
@@ -219,9 +212,11 @@ class AuthService {
   }
 
   Future<Map<String, String>> authenticatedHeaders() async {
+    final session = await _storage.read(key: _sessionCookieKey);
+    final token = session?.replaceFirst('session=', '');
     return {
       'Content-Type': 'application/json',
-      ...await _sessionHeader(),
+      if (token != null && token.isNotEmpty) 'Authorization': 'Bearer $token',
     };
   }
 }
