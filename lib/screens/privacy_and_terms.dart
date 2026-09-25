@@ -4,6 +4,8 @@ import 'setup_screen.dart';
 import 'home_screen.dart';
 import '../terms_and_conditions.dart';
 
+import '../themes/app_themes.dart'; // For color themes
+
 // Privacy & Terms Screen
 class PrivacyScreen extends StatefulWidget {
   final String motherName;
@@ -11,7 +13,7 @@ class PrivacyScreen extends StatefulWidget {
   final String password;
   final String babyGender;
   final DateTime dueDate;
-  final Color themeColor;
+  final AppTheme theme;
 
   const PrivacyScreen({
     super.key,
@@ -20,7 +22,7 @@ class PrivacyScreen extends StatefulWidget {
     required this.password,
     required this.babyGender,
     required this.dueDate,
-    required this.themeColor,
+    required this.theme,
   });
 
   @override
@@ -49,7 +51,7 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
             motherName: widget.motherName,
             babyGender: widget.babyGender,
             dueDate: widget.dueDate,
-            themeColor: widget.themeColor,
+            theme: widget.theme,
           ),
         ),
         (route) => false,
@@ -82,7 +84,7 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
           backgroundColor: Colors.transparent,
           elevation: 0,
           leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: widget.themeColor),
+            icon: Icon(Icons.arrow_back, color: widget.theme.primary),
             onPressed: () => Navigator.pop(context),
           ),
         ),
@@ -96,7 +98,7 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
                 style: TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.bold,
-                  color: widget.themeColor,
+                  color: widget.theme.primary,
                 ),
               ),
               const SizedBox(height: 10),
@@ -141,9 +143,9 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
                       width: 24,
                       height: 24,
                       decoration: BoxDecoration(
-                        color: _agreedToTerms ? widget.themeColor : Colors.white,
+                        color: _agreedToTerms ? widget.theme.primary : Colors.white,
                         border: Border.all(
-                          color: _agreedToTerms ? widget.themeColor : Colors.grey,
+                          color: _agreedToTerms ? widget.theme.primary : Colors.grey,
                           width: 2,
                         ),
                         borderRadius: BorderRadius.circular(6),
@@ -172,7 +174,7 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => TermsAndConditionsScreen(
-                        themeColor: widget.themeColor,
+                        theme: widget.theme,
                       ),
                     ),
                   );
@@ -180,19 +182,19 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
                 child: Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: widget.themeColor.withValues(alpha: 0.1),
+                    color: widget.theme.primary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: widget.themeColor),
+                    border: Border.all(color: widget.theme.primary),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.open_in_new, color: widget.themeColor, size: 18),
+                      Icon(Icons.open_in_new, color: widget.theme.primary, size: 18),
                       const SizedBox(width: 8),
                       Text(
                         'View Full Terms & Conditions',
                         style: TextStyle(
-                          color: widget.themeColor,
+                          color: widget.theme.primary,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -208,7 +210,7 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
                       ? _createAccount
                       : null,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: widget.themeColor,
+                    backgroundColor: widget.theme.primary,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 18),
                     shape: RoundedRectangleBorder(
@@ -268,7 +270,7 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, color: widget.themeColor, size: 28),
+        Icon(icon, color: widget.theme.primary, size: 28),
         const SizedBox(width: 15),
         Expanded(
           child: Column(

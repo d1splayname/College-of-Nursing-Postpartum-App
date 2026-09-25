@@ -8,7 +8,7 @@ import 'terms_and_conditions.dart';
 
 */
 
-import 'screens/login_screen.dart';
+import 'screens/login_screen.dart'; 
 import 'screens/welcome_screen.dart';
 import 'screens/setup_screen.dart';
 import 'screens/privacy_and_terms.dart';
@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Postpartum Care',
+      title: 'Fourth Trimester',
       theme: ThemeData(
         primarySwatch: Colors.purple,
         scaffoldBackgroundColor: const Color(0xFFFFFBF5), // Cream background

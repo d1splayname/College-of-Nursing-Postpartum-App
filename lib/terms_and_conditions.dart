@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'themes/app_themes.dart';
 
 class TermsAndConditionsScreen extends StatefulWidget {
-  final Color themeColor;
+  final AppTheme theme;
 
   const TermsAndConditionsScreen({
     super.key,
-    required this.themeColor,
+    required this.theme,
   });
 
   @override
@@ -21,12 +22,12 @@ class _TermsAndConditionsScreenState extends State<TermsAndConditionsScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: widget.themeColor),
+          icon: Icon(Icons.arrow_back, color: widget.theme.primary),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
           'Terms & Conditions',
-          style: TextStyle(color: widget.themeColor),
+          style: TextStyle(color: widget.theme.primary),
         ),
       ),
       body: SingleChildScrollView(
@@ -39,7 +40,7 @@ class _TermsAndConditionsScreenState extends State<TermsAndConditionsScreen> {
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: widget.themeColor,
+                color: widget.theme.primary,
               ),
             ),
             const SizedBox(height: 6),
@@ -507,7 +508,7 @@ class _TermsAndConditionsScreenState extends State<TermsAndConditionsScreen> {
             style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.bold,
-              color: widget.themeColor.withValues(alpha: 0.8),
+              color: widget.theme.primary.withValues(alpha: 0.8),
             ),
           ),
           const SizedBox(height: 12),
