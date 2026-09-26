@@ -18,7 +18,7 @@ class PublicUser(BaseModel):
     id: int
     username: str
     registered_time: datetime
-    last_login_time: datetime | None = None
+    last_login_time: datetime | None
     active: bool
     is_admin: bool
 
