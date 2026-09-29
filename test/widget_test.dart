@@ -13,6 +13,7 @@ import 'package:post_app/main.dart';
 void main() {
   testWidgets('login screen is shown on startup', (WidgetTester tester) async {
     await tester.pumpWidget(const MyApp());
+    await tester.pumpAndSettle();
 
     expect(find.text('Welcome back'), findsOneWidget);
     expect(find.text('Sign In'), findsOneWidget);

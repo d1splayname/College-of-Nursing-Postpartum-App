@@ -42,9 +42,47 @@ class LoginResponse {
   }
 }
 
+class SessionProfile {
+  final String motherName;
+  final String babyGender;
+  final DateTime dueDate;
+  final int themeColor;
+
+  const SessionProfile({
+    required this.motherName,
+    required this.babyGender,
+    required this.dueDate,
+    required this.themeColor,
+  });
+
+  factory SessionProfile.fromJson(Map<String, dynamic> json) {
+    return SessionProfile(
+      motherName: json['motherName'] as String,
+      babyGender: json['babyGender'] as String,
+      dueDate: DateTime.parse(json['dueDate'] as String),
+      themeColor: json['themeColor'] as int,
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        'motherName': motherName,
+        'babyGender': babyGender,
+        'dueDate': dueDate.toIso8601String(),
+        'themeColor': themeColor,
+      };
+}
+
+class StoredSession {
+  final LoginResponse response;
+  final SessionProfile? profile;
+
+  const StoredSession({required this.response, this.profile});
+}
+
 class AuthService {
   static const _apiBaseUrl = 'http://localhost:8080';
   static const _sessionCookieKey = 'session_cookie';
+  static const _profileKey = 'session_profile';
   static const _storage = FlutterSecureStorage();
 
   Future<LoginResponse> signup({
@@ -129,6 +167,56 @@ class AuthService {
   }
 
   Future<void> logout() => _storage.delete(key: _sessionCookieKey);
+
+  Future<void> saveProfile(SessionProfile profile) async {
+    await _storage.write(
+      key: _profileKey,
+      value: jsonEncode(profile.toJson()),
+    );
+  }
+
+  Future<StoredSession?> restoreSession() async {
+    final token = await _storage.read(key: _sessionCookieKey);
+    if (token == null || token.isEmpty) return null;
+
+    try {
+      final response = await http.get(
+        Uri.parse('$_apiBaseUrl/api/session'),
+        headers: {
+          ...await _sessionHeader(),
+          'Authorization': 'Bearer ${token.replaceFirst('session=', '')}',
+        },
+      );
+      if (response.statusCode != 200) {
+        await logout();
+        return null;
+      }
+
+      final decoded = jsonDecode(response.body) as Map<String, dynamic>;
+      final profileJson = await _storage.read(key: _profileKey);
+      return StoredSession(
+        response: LoginResponse(
+          token: token.replaceFirst('session=', ''),
+          user: AuthUser.fromJson(decoded['user'] as Map<String, dynamic>),
+        ),
+        profile: profileJson == null
+            ? null
+            : SessionProfile.fromJson(
+                jsonDecode(profileJson) as Map<String, dynamic>,
+              ),
+      );
+    } on FormatException {
+      await logout();
+      return null;
+    } on http.ClientException {
+      return null;
+    }
+  }
+
+  Future<void> clearSession() async {
+    await _storage.delete(key: _sessionCookieKey);
+    await _storage.delete(key: _profileKey);
+  }
 
   Future<Map<String, String>> authenticatedHeaders() async {
     return {
