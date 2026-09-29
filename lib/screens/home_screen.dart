@@ -6,19 +6,21 @@ import '../growth_tracker_screen.dart';
 import 'calendar_screen.dart';
 import 'settings_screens/settings_screen.dart';
 
+import '../themes/app_themes.dart'; // For color themes
+
 // Home Screen (Updated with personalization and theme color)
 class HomeScreen extends StatefulWidget {
   final String motherName;
   final String babyGender;
   final DateTime dueDate;
-  final Color themeColor;
+  final AppTheme theme;
 
   const HomeScreen({
     super.key,
     required this.motherName,
     required this.babyGender,
     required this.dueDate,
-    required this.themeColor,
+    required this.theme,
   });
 
   @override
@@ -26,18 +28,19 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+
   int _selectedIndex = 0;
-  late Color _currentThemeColor;
+  late AppTheme _currentTheme;
 
   @override
   void initState() {
     super.initState();
-    _currentThemeColor = widget.themeColor;
+    _currentTheme = widget.theme;
   }
 
-  void _updateThemeColor(Color newColor) {
+  void _updateThemeColor(AppTheme newTheme){
     setState(() {
-      _currentThemeColor = newColor;
+      _currentTheme = newTheme;
     });
   }
 
@@ -56,11 +59,23 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = _currentTheme;
+
     final List<Widget> screens = [
       DashboardScreen(
         motherName: widget.motherName,
         babyGender: widget.babyGender,
-        themeColor: _currentThemeColor,
+        themeColor: theme.primary,
+      ),
+      BabyTrackerScreen(
+        babyGender: widget.babyGender, 
+        themeColor: theme.primary,
+      ),
+      SelfCareScreen(
+        themeColor: theme.primary,
+      ),
+      GrowthTrackerScreen(
+        themeColor: theme.primary,
       ),
       BabyTrackerScreen(
         babyGender: widget.babyGender,
@@ -75,19 +90,25 @@ class _HomeScreenState extends State<HomeScreen> {
       SettingsScreen(
         motherName: widget.motherName,
         babyGender: widget.babyGender,
-        themeColor: _currentThemeColor,
+        theme: theme,
         onThemeColorChanged: _updateThemeColor,
       ),
     ];
 
+    
     return Scaffold(
-      backgroundColor: _getBackgroundColor(_currentThemeColor),
-      body: screens[_selectedIndex],
+      body: Container (
+        decoration: BoxDecoration(
+          gradient: theme.background,
+        ),
+        child: screens[_selectedIndex],
+      ),
+
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           boxShadow: [
             BoxShadow(
-              color: _currentThemeColor.withValues(alpha: 0.2),
+              color: theme.primary.withValues(alpha: 0.2),
               blurRadius: 10,
               offset: const Offset(0, -5),
             ),
@@ -100,7 +121,7 @@ class _HomeScreenState extends State<HomeScreen> {
               _selectedIndex = index;
             });
           },
-          selectedItemColor: _currentThemeColor,
+          selectedItemColor: theme.card,
           unselectedItemColor: Colors.grey,
           type: BottomNavigationBarType.fixed,
           items: const [

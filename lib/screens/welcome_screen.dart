@@ -2,19 +2,27 @@ import 'package:flutter/material.dart';
 import 'login_screen.dart';
 import 'setup_screen.dart';
 
-// Welcome Screen
+import '../themes/app_themes.dart'; // For color themes
+import 'package:google_fonts/google_fonts.dart'; // For text
+// Welcome Screen 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // Default theme (this screen only uses the default)
+    final AppTheme theme = OceanTheme;
+
     return Scaffold(
       // Back button
       appBar: AppBar(
-        backgroundColor: Color(0xFFE0BBE4),
+        backgroundColor: theme.tertiary,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF9C88D9)),
+          icon: Icon(
+            Icons.arrow_back,
+            color: theme.text,
+          ),
           onPressed: () {
             Navigator.push(
               context,
@@ -25,12 +33,8 @@ class WelcomeScreen extends StatelessWidget {
       ),
 
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xFFE0BBE4), Color(0xFFF8F4FF)],
-          ),
+        decoration: BoxDecoration(
+          gradient: theme.background,
         ),
         child: SafeArea(
           child: SingleChildScrollView(
@@ -42,15 +46,30 @@ class WelcomeScreen extends StatelessWidget {
 
                 // App Icon/Logo
                 Container(
-                  padding: const EdgeInsets.all(30),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 64,
+                    vertical: 32,
+                  ),
                   decoration: BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFF9C88D9).withValues(alpha: 0.3),
-                        blurRadius: 20,
-                        offset: const Offset(0, 10),
+                    color: theme.primary,
+                    borderRadius: BorderRadius.circular(40),
+                    border: Border.all(
+                      color: theme.secondary,
+                      width: 0.5,
+                    ),
+                  ),
+                  child: Column (
+                    children: [
+                      Icon(Icons.favorite, size: 80, color: theme.tertiary),
+                      const SizedBox(height: 40),
+                      Text(
+                        'Welcome to the \nFourth Trimester',
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.poppins(
+                          fontSize: 36,
+                          fontWeight: FontWeight.w600,
+                          color: theme.text,                              
+                        ),
                       ),
                     ],
                   ),
@@ -115,8 +134,8 @@ class WelcomeScreen extends StatelessWidget {
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF9C88D9),
-                      foregroundColor: Colors.white,
+                      backgroundColor: theme.card,
+                      foregroundColor: theme.text,
                       padding: const EdgeInsets.symmetric(vertical: 18),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30),
@@ -143,6 +162,7 @@ class WelcomeScreen extends StatelessWidget {
   }
 
   Widget _buildFeature(IconData icon, String text) {
+    final AppTheme theme = OceanTheme;
     return Row(
       children: [
         Container(
@@ -151,13 +171,20 @@ class WelcomeScreen extends StatelessWidget {
             color: Colors.white.withValues(alpha: 0.3),
             borderRadius: BorderRadius.circular(10),
           ),
-          child: Icon(icon, color: const Color(0xFF9C88D9), size: 24),
+          child: Icon(
+            icon,
+            color: theme.icon,
+            size: 24,
+          ),
         ),
         const SizedBox(width: 15),
         Expanded(
           child: Text(
             text,
-            style: TextStyle(fontSize: 16, color: Colors.grey[800]),
+            style: TextStyle(
+              fontSize: 16,
+              color: theme.text,
+            ),
           ),
         ),
       ],

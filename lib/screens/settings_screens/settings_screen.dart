@@ -4,23 +4,26 @@ import '../login_screen.dart';
 import '../privacy_and_terms.dart';
 import '../../terms_and_conditions.dart';
 
+import '../../themes/app_themes.dart';
+
 // Settings Screen with Theme Changer
 class SettingsScreen extends StatelessWidget {
   final String motherName;
   final String babyGender;
-  final Color themeColor;
-  final Function(Color) onThemeColorChanged;
+  final AppTheme theme;
+  final Function(AppTheme) onThemeColorChanged;
 
   const SettingsScreen({
     super.key,
     required this.motherName,
     required this.babyGender,
-    required this.themeColor,
+    required this.theme,
     required this.onThemeColorChanged,
   });
 
   @override
   Widget build(BuildContext context) {
+    final Color themeColor = theme.primary;
     return SafeArea(
       child: SingleChildScrollView(
         padding: EdgeInsets.fromLTRB(
@@ -141,7 +144,7 @@ class SettingsScreen extends StatelessWidget {
                   context,
                   MaterialPageRoute(
                     builder: (context) => TermsAndConditionsScreen(
-                      themeColor: themeColor,
+                      theme: theme,
                     ),
                   ),
                 );
@@ -234,10 +237,10 @@ class SettingsScreen extends StatelessWidget {
   }
 
   void _showColorPicker(BuildContext context) {
-    final Map<String, Color> colorOptions = {
-      'Boy (Blue)': const Color(0xFFAEC6FF),
-      'Girl (Pink)': const Color(0xFFFFB5E8),
-      'Neutral (Yellow/Nude)': const Color(0xFFFFF4C1),
+    final Map<String, AppTheme> themeOptions = {
+      'Ocean': OceanTheme,
+      'Sunrise': SunriseTheme,
+      'Desert': DesertTheme,
     };
 
     showDialog(
@@ -250,8 +253,8 @@ class SettingsScreen extends StatelessWidget {
           ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
-            children: colorOptions.entries.map((entry) {
-              final isSelected = themeColor == entry.value;
+            children: themeOptions.entries.map((entry) {
+              final isSelected = theme == entry.value.primary;
               return GestureDetector(
                 onTap: () {
                   onThemeColorChanged(entry.value);
@@ -259,7 +262,7 @@ class SettingsScreen extends StatelessWidget {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text('Theme changed to ${entry.key}'),
-                      backgroundColor: entry.value,
+                      backgroundColor: entry.value.primary,
                       duration: const Duration(seconds: 2),
                     ),
                   );
@@ -271,7 +274,7 @@ class SettingsScreen extends StatelessWidget {
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(15),
                     border: Border.all(
-                      color: isSelected ? entry.value : Colors.grey.shade300,
+                      color: isSelected ? entry.value.primary : Colors.grey.shade300,
                       width: isSelected ? 3 : 1,
                     ),
                   ),
@@ -281,7 +284,7 @@ class SettingsScreen extends StatelessWidget {
                         width: 40,
                         height: 40,
                         decoration: BoxDecoration(
-                          color: entry.value,
+                          color: entry.value.primary,
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
@@ -295,7 +298,7 @@ class SettingsScreen extends StatelessWidget {
                       ),
                       const Spacer(),
                       if (isSelected)
-                        Icon(Icons.check_circle, color: entry.value),
+                        Icon(Icons.check_circle, color: entry.value.primary),
                     ],
                   ),
                 ),

@@ -3,7 +3,9 @@ import '../auth_service.dart';
 import 'welcome_screen.dart';
 import 'home_screen.dart';
 
-
+import '../themes/app_themes.dart'; // For color themes
+import 'package:flutter_svg/flutter_svg.dart'; // For icons
+import 'package:google_fonts/google_fonts.dart'; // For text
 
 // Login Screen 
 class LoginScreen extends StatefulWidget {
@@ -26,8 +28,8 @@ class _LoginScreenState extends State<LoginScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Please enter your username and password.'),
-          backgroundColor: Color(0xFFD4A5A5),
-        ),
+          backgroundColor: Color(0xFF16587B),
+        ), 
       );
       return;
     }
@@ -58,7 +60,7 @@ class _LoginScreenState extends State<LoginScreen> {
             motherName: response.user.username,
             babyGender: 'Neutral',
             dueDate: DateTime.now(),
-            themeColor: const Color(0xFF9C88D9),
+            theme: OceanTheme,
           ),
         ),
       );
@@ -89,137 +91,214 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Default theme (this screen only uses the default)
+    final AppTheme theme = OceanTheme;
+    
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFFE0BBE4),
-              Color(0xFFF8F4FF),
-            ],
-          ),
+        decoration: BoxDecoration(
+          gradient: theme.background,
         ),
         child: SafeArea(
-          child: Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(30),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(24),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFF9C88D9).withValues(alpha: 0.2),
-                          blurRadius: 20,
-                          offset: const Offset(0, 10),
-                        ),
-                      ],
-                    ),
-                    child: const Icon(
-                      Icons.favorite,
-                      size: 60,
-                      color: Color(0xFF9C88D9),
-                    ),
+          child: Stack(
+            children: [
+
+              // Moon Icon
+              Positioned(
+                left: MediaQuery.of(context).size.width * 0.04,
+                top: MediaQuery.of(context).size.height * 0.1,
+
+                child: Opacity(
+                  opacity: 0.9,
+                  child: SvgPicture.asset(
+                    'assets/icons/moon.svg',
+                    width: (MediaQuery.of(context).size.width * 0.15).clamp(0.0, 120.0),
                   ),
-                  const SizedBox(height: 30),
-                  const Text(
-                    'Welcome back',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF9C88D9),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Sign in to continue your journey',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.grey[700],
-                    ),
-                  ),
-                  const SizedBox(height: 30),
-                  TextFormField(
-                    controller: _usernameController,
-                    keyboardType: TextInputType.text,
-                    decoration: InputDecoration(
-                      labelText: 'Username',
-                      filled: true,
-                      fillColor: Colors.white,
-                      prefixIcon: const Icon(Icons.person, color: Color(0xFF9C88D9)),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(15),
-                        borderSide: BorderSide.none,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  TextFormField(
-                    controller: _passwordController,
-                    obscureText: true,
-                    decoration: InputDecoration(
-                      labelText: 'Password',
-                      filled: true,
-                      fillColor: Colors.white,
-                      prefixIcon: const Icon(Icons.lock, color: Color(0xFF9C88D9)),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(15),
-                        borderSide: BorderSide.none,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: _isLoading ? null : _handleLogin,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF9C88D9),
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 18),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        elevation: 5,
-                      ),
-                      child: Text(
-                        _isLoading ? 'Signing In...' : 'Sign In',
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (context) => const WelcomeScreen()),
-                      );
-                    },
-                    child: const Text(
-                      'Create an account',
-                      style: TextStyle(
-                        color: Color(0xFF9C88D9),
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ],
+                ),
               ),
-            ),
-          ),
+
+              // Cloud Icon
+              Positioned(
+                right: MediaQuery.of(context).size.width * 0.2,
+                top: MediaQuery.of(context).size.height * 0.07,
+                child: Opacity(
+                  opacity: 0.9,
+                  child: SvgPicture.asset(
+                    'assets/icons/cloud.svg',
+                    width: (MediaQuery.of(context).size.width * 0.5).clamp(0.0, 100.0),
+                  ),
+                ),
+              ),
+
+              Center(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(30),
+
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+
+                    children: [
+                      const SizedBox(height: 30),
+                      Center(
+                        child: Container(
+                          margin: const EdgeInsets.only(top: 60),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 100,
+                            vertical: 84,
+                          ),
+                          decoration: BoxDecoration(
+                            color: theme.primary,
+                            borderRadius: BorderRadius.circular(40),
+                            border: Border.all(
+                              color: theme.secondary,
+                              width: 0.5,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: theme.text.withOpacity(0.4),
+                                blurRadius: 50,
+                                offset: const Offset(0, 0),
+                              ),
+                            ],
+                          ),
+                          child: Text(
+                            'Welcome back',
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.poppins(
+                              fontSize: 46,
+                              fontWeight: FontWeight.bold,
+                              color: theme.text,
+                            ),
+                          ),
+                        ),
+                      ), 
+                      const SizedBox(height: 24),
+                      Text(
+                        'Sign in to continue your journey',
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.poppins(
+                          fontSize: 16,
+                          fontStyle: FontStyle.italic,
+                          color: theme.text,
+                          shadows: [
+                            Shadow(
+                              color: theme.text.withOpacity(0.5),
+                              offset: const Offset(0,0),
+                              blurRadius: 20,
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 100),
+                      TextFormField(
+                        controller: _usernameController,
+                        keyboardType: TextInputType.text,
+                        decoration: InputDecoration(
+                          labelText: 'Username',
+                          filled: true,
+                          fillColor: theme.primary,
+                          prefixIcon: Icon(Icons.person, color: theme.text),
+                          
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(17),
+                            borderSide: BorderSide(
+                              color: theme.secondary,
+                              width: 1,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(17),
+                            borderSide: BorderSide(
+                              color: theme.text,
+                              width: 1,
+                            ),
+                          ), 
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: _passwordController,
+                        obscureText: true,
+                        decoration: InputDecoration(
+                          labelText: 'Password',
+                          filled: true,
+                          fillColor: theme.primary,
+                          prefixIcon: Icon(Icons.lock, color: theme.text),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(17),
+                            borderSide: BorderSide(
+                              color: theme.secondary,
+                              width: 1,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(17),
+                            borderSide: BorderSide(
+                              color: theme.text,
+                              width: 1,
+                            ),
+                          ),                      
+                        ),
+                      ),
+                      const SizedBox(height: 36),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: _isLoading ? null : _handleLogin,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: theme.card,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 18),
+                            side: BorderSide(
+                              color: theme.tertiary,
+                              width: 0.5,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            elevation: 5,
+                            shadowColor: Colors.black,
+                          ),
+                          child: Text(
+                            _isLoading ? 'Signing In...' : 'Sign In',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: theme.text,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Center(
+                        child: TextButton(
+                          onPressed: () {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(builder: (context) => const WelcomeScreen()),
+                            );
+                          },
+                          style: TextButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 64,
+                              vertical: 16,
+                            ),
+                          ),
+                          child: const Text(
+                            'Create an account',
+                            style: TextStyle(
+                              color: Color(0xFF000000),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ), //end of stack            
         ),
       ),
     );
