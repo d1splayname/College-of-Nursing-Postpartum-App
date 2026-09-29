@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'welcome_screen.dart';
 import 'privacy_and_terms.dart';
 
+import '../themes/app_themes.dart'; // For color themes
+import 'package:flutter_svg/flutter_svg.dart'; // For icons
+import 'package:google_fonts/google_fonts.dart'; // For text
+
 // Setup Screen (Updated with gender and color selection)
 class SetupScreen extends StatefulWidget {
   const SetupScreen({super.key});
@@ -16,22 +20,23 @@ class _SetupScreenState extends State<SetupScreen> {
   final TextEditingController _passwordController = TextEditingController();
   DateTime? _dueDate;
   String? _selectedGender;
-  Color? _selectedColor;
+  AppTheme theme = OceanTheme;
 
-  final Map<String, Color> _colorOptions = {
-    'Boy (Blue)': const Color(0xFFAEC6FF),
-    'Girl (Pink)': const Color(0xFFFFB5E8),
-    'Neutral (Yellow/Nude)': const Color(0xFFFFF4C1),
+  final Map<String, AppTheme> _themeOptions = {
+    'Ocean': OceanTheme,
+    'Sunrise': SunriseTheme,
+    'Desert': DesertTheme,
   };
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: theme.tertiary,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: theme.tertiary,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF9C88D9)),
+          icon: Icon(Icons.arrow_back, color: theme.text),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -40,31 +45,32 @@ class _SetupScreenState extends State<SetupScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Let\'s personalize',
-              style: TextStyle(
+            Text(
+              'We\'re happy you\'re here',
+              style: GoogleFonts.poppins(
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF9C88D9),
+                color: theme.card,
               ),
             ),
             const SizedBox(height: 10),
             Text(
               'Help us create your perfect experience',
-              style: TextStyle(
+              style: GoogleFonts.poppins(
                 fontSize: 16,
-                color: Colors.grey[600],
+                color: theme.primary,
               ),
             ),
             
             const SizedBox(height: 40),
             
             // Mother's Name
-            const Text(
+            Text(
               'Your Name',
-              style: TextStyle(
+              style: GoogleFonts.poppins(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
+                color: theme.primary,
               ),
             ),
             const SizedBox(height: 10),
@@ -73,51 +79,53 @@ class _SetupScreenState extends State<SetupScreen> {
               decoration: InputDecoration(
                 hintText: 'Enter your name',
                 filled: true,
-                fillColor: Colors.white,
+                fillColor: theme.primary,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(15),
                   borderSide: BorderSide.none,
                 ),
-                prefixIcon: const Icon(Icons.person, color: Color(0xFF9C88D9)),
+                prefixIcon: Icon(Icons.person, color: theme.tertiary),
               ),
             ),
             
-            const SizedBox(height: 25),
+            const SizedBox(height: 20),
             
             // Create Your Username
-            const Text(
+            Text(
               'Username',
-              style: TextStyle(
+              style: GoogleFonts.poppins(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
+                color: theme.primary,
               ),
             ),
-            const SizedBox(height:10),
+            const SizedBox(height:20),
 
             TextField(
               controller: _usernameController,
               decoration: InputDecoration(
                 hintText: 'Create a Username',
                 filled: true,
-                fillColor: Colors.white,
+                fillColor: theme.primary,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(15),
                   borderSide: BorderSide.none,
                 ),
-                prefixIcon: const Icon(Icons.person_outline, color: Color(0xFF9C88D9)),
+                prefixIcon: Icon(Icons.person_outline, color: theme.tertiary),
               ),
             ),
-            const SizedBox(height:25),
+            const SizedBox(height:20),
 
             // Password 
-            const Text(
+            Text(
               'Choose a Password',
-              style: TextStyle(
+              style: GoogleFonts.poppins(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
+                color: theme.primary,
               ),
             ),
-            const SizedBox(height:25),
+            const SizedBox(height:20),
 
             TextField(
               controller: _passwordController,
@@ -125,37 +133,38 @@ class _SetupScreenState extends State<SetupScreen> {
               decoration: InputDecoration(
                 hintText: 'Enter a Strong Password',
                 filled: true,
-                fillColor: Colors.white,
+                fillColor: theme.primary,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(15),
                   borderSide: BorderSide.none,
                 ),
-                prefixIcon: const Icon(Icons.lock_outline, color: Color(0xFF9C88D9)),
+                prefixIcon: Icon(Icons.lock_outline, color: theme.tertiary),
               ),
             ),
-            const SizedBox(height:25),
+            const SizedBox(height:20),
 
             // Baby's Gender
-            const Text(
+            Text(
               'Baby\'s Gender',
-              style: TextStyle(
+              style: GoogleFonts.poppins(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
+                color: theme.primary
               ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 20),
             Row(
               children: [
                 Expanded(
-                  child: _buildGenderOption('Boy', Icons.male, const Color(0xFFAEC6FF)),
+                  child: _buildGenderOption('Boy', Icons.male, const Color(0xFF84B3C3)),
                 ),
-                const SizedBox(width: 10),
+                const SizedBox(width: 15),
                 Expanded(
-                  child: _buildGenderOption('Girl', Icons.female, const Color(0xFFFFB5E8)),
+                  child: _buildGenderOption('Girl', Icons.female, const Color(0xFFE89184)),
                 ),
-                const SizedBox(width: 10),
+                const SizedBox(width: 15),
                 Expanded(
-                  child: _buildGenderOption('Neutral', Icons.child_care, const Color(0xFFFFF4C1)),
+                  child: _buildGenderOption('I\'d prefer not to say', Icons.child_care, const Color(0xFFE6C96A)),
                 ),
               ],
             ),
@@ -163,11 +172,12 @@ class _SetupScreenState extends State<SetupScreen> {
             const SizedBox(height: 25),
             
             // Due Date
-            const Text(
+            Text(
               'Due Date / Birth Date',
-              style: TextStyle(
+              style: GoogleFonts.poppins(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
+                color: theme.primary
               ),
             ),
             const SizedBox(height: 10),
@@ -198,7 +208,7 @@ class _SetupScreenState extends State<SetupScreen> {
               child: Container(
                 padding: const EdgeInsets.all(18),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: theme.primary,
                   borderRadius: BorderRadius.circular(15),
                 ),
                 child: Row(
@@ -222,59 +232,94 @@ class _SetupScreenState extends State<SetupScreen> {
             const SizedBox(height: 25),
             
             // Color Theme Selection
-            const Text(
-              'Choose Your Color Theme',
-              style: TextStyle(
+            Text(
+              'Choose Your Theme',
+              style: GoogleFonts.poppins(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
+                color: theme.primary,
               ),
             ),
             const SizedBox(height: 10),
-            ..._colorOptions.entries.map((entry) {
-              final isSelected = _selectedColor == entry.value;
-              return GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _selectedColor = entry.value;
-                  });
-                },
-                child: Container(
-                  margin: const EdgeInsets.only(bottom: 10),
-                  padding: const EdgeInsets.all(15),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(15),
-                    border: Border.all(
-                      color: isSelected ? entry.value : Colors.grey.shade300,
-                      width: isSelected ? 3 : 1,
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 40,
-                        height: 40,
+
+            Text(
+              'Don\'t worry, you can change this later.',
+              style: TextStyle(
+                fontSize: 14,
+                color: theme.primary,
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            Row(
+              children: _themeOptions.entries.map((entry) {
+                final isSelected = theme == entry.value;
+              
+                String iconPath;
+                switch(entry.key) {
+                  case 'Ocean':
+                    iconPath = 'assets/icons/ocean.svg';
+                    break;
+                  case 'Sunrise':
+                    iconPath = 'assets/icons/sunrise.svg';
+                    break;
+                  case 'Desert':
+                    iconPath = 'assets/icons/desert.svg';
+                    break;
+                  default:
+                    iconPath = 'assets/icons/ocean.svg';
+                    break;
+                }
+
+                return Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 5),
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          theme = entry.value;
+                        });
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.only(bottom: 10),
+                        padding: const EdgeInsets.all(15),
                         decoration: BoxDecoration(
-                          color: entry.value,
-                          borderRadius: BorderRadius.circular(10),
+                          color: theme.primary,
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: isSelected ? entry.value.primary : Colors.grey.shade300,
+                            width: isSelected ? 3 : 1,
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 15),
-                      Text(
-                        entry.key,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                        ),
-                      ),
-                      const Spacer(),
-                      if (isSelected)
-                        Icon(Icons.check_circle, color: entry.value),
-                    ],
-                  ),
-                ),
-              );
-            }),
+                        child: Column(
+                          children: [
+
+                            SvgPicture.asset(
+                              iconPath,
+                              width: 90,
+                              height: 90,
+                            ),
+                            const SizedBox(height: 8),
+
+                            Text(
+                              entry.key,
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                              ),
+                            ),
+
+                            if (isSelected)
+                              Icon(Icons.check_circle, color: entry.value.primary),
+                          ],
+                        ), // Column
+                      ), // Container
+                    ), // GestureDetector
+                  ), // Padding
+                ); // Expanded
+              }).toList(), // map
+            ), // Row
             
             const SizedBox(height: 40),
             
@@ -287,12 +332,11 @@ class _SetupScreenState extends State<SetupScreen> {
                       _usernameController.text.isEmpty ||
                       _passwordController.text.isEmpty ||
                       _selectedGender == null ||
-                      _dueDate == null ||
-                      _selectedColor == null) {
+                      _dueDate == null ) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
+                      SnackBar(
                         content: Text('Please fill in all fields'),
-                        backgroundColor: Color(0xFFD4A5A5),
+                        backgroundColor: theme.card,
                       ),
                     );
                     return;
@@ -307,23 +351,23 @@ class _SetupScreenState extends State<SetupScreen> {
                         password: _passwordController.text,
                         babyGender: _selectedGender!,
                         dueDate: _dueDate!,
-                        themeColor: _selectedColor!,
+                        theme: theme,
                       ),
                     ),
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF9C88D9),
-                  foregroundColor: Colors.white,
+                  backgroundColor: theme.card,
+                  foregroundColor: theme.text,
                   padding: const EdgeInsets.symmetric(vertical: 18),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),
                   elevation: 5,
                 ),
-                child: const Text(
+                child: Text(
                   'Continue',
-                  style: TextStyle(
+                  style: GoogleFonts.poppins(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
@@ -347,7 +391,7 @@ class _SetupScreenState extends State<SetupScreen> {
       child: Container(
         padding: const EdgeInsets.all(15),
         decoration: BoxDecoration(
-          color: isSelected ? color.withValues(alpha: 0.3) : Colors.white,
+          color: isSelected ? color.withValues(alpha: 0.3) : theme.primary,
           borderRadius: BorderRadius.circular(15),
           border: Border.all(
             color: isSelected ? color : Colors.grey.shade300,

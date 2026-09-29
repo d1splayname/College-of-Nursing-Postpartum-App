@@ -3,22 +3,27 @@ import 'login_screen.dart';
 import 'setup_screen.dart';
 import 'privacy_and_terms.dart';
 
+import '../themes/app_themes.dart'; // For color themes
+import 'package:google_fonts/google_fonts.dart'; // For text
 // Welcome Screen 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // Default theme (this screen only uses the default)
+    final AppTheme theme = OceanTheme;
+
     return Scaffold(
 
       // Back button
       appBar: AppBar(
-        backgroundColor: Color(0xFFE0BBE4),
+        backgroundColor: theme.tertiary,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(
+          icon: Icon(
             Icons.arrow_back,
-            color: Color(0xFF9C88D9),
+            color: theme.text,
           ),
           onPressed: () {
             Navigator.push(
@@ -32,15 +37,8 @@ class WelcomeScreen extends StatelessWidget {
       ),
 
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFFE0BBE4),
-              Color(0xFFF8F4FF),
-            ],
-          ),
+        decoration: BoxDecoration(
+          gradient: theme.background,
         ),
         child: SafeArea(
           child: Padding(
@@ -52,44 +50,32 @@ class WelcomeScreen extends StatelessWidget {
                 
                 // App Icon/Logo
                 Container(
-                  padding: const EdgeInsets.all(30),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 64,
+                    vertical: 32,
+                  ),
                   decoration: BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFF9C88D9).withValues(alpha: 0.3),
-                        blurRadius: 20,
-                        offset: const Offset(0, 10),
+                    color: theme.primary,
+                    borderRadius: BorderRadius.circular(40),
+                    border: Border.all(
+                      color: theme.secondary,
+                      width: 0.5,
+                    ),
+                  ),
+                  child: Column (
+                    children: [
+                      Icon(Icons.favorite, size: 80, color: theme.tertiary),
+                      const SizedBox(height: 40),
+                      Text(
+                        'Welcome to the \nFourth Trimester',
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.poppins(
+                          fontSize: 36,
+                          fontWeight: FontWeight.w600,
+                          color: theme.text,                              
+                        ),
                       ),
                     ],
-                  ),
-                  child: const Icon(
-                    Icons.favorite,
-                    size: 80,
-                    color: Color(0xFF9C88D9),
-                  ),
-                ),
-                
-                const SizedBox(height: 40),
-                
-                const Text(
-                  'We\'re glad you\'re here.',
-                  style: TextStyle(
-                    fontSize: 36,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF9C88D9),
-                  ),
-                ),
-                
-                const SizedBox(height: 15),
-                
-                Text(
-                  'Your postpartum journey companion',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.grey[700],
                   ),
                 ),
                 
@@ -119,8 +105,8 @@ class WelcomeScreen extends StatelessWidget {
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF9C88D9),
-                      foregroundColor: Colors.white,
+                      backgroundColor: theme.card,
+                      foregroundColor: theme.text,
                       padding: const EdgeInsets.symmetric(vertical: 18),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30),
@@ -147,6 +133,7 @@ class WelcomeScreen extends StatelessWidget {
   }
 
   Widget _buildFeature(IconData icon, String text) {
+    final AppTheme theme = OceanTheme;
     return Row(
       children: [
         Container(
@@ -157,7 +144,7 @@ class WelcomeScreen extends StatelessWidget {
           ),
           child: Icon(
             icon,
-            color: const Color(0xFF9C88D9),
+            color: theme.icon,
             size: 24,
           ),
         ),
@@ -167,7 +154,7 @@ class WelcomeScreen extends StatelessWidget {
             text,
             style: TextStyle(
               fontSize: 16,
-              color: Colors.grey[800],
+              color: theme.text,
             ),
           ),
         ),
