@@ -77,15 +77,9 @@ class _HomeScreenState extends State<HomeScreen> {
       GrowthTrackerScreen(
         themeColor: theme.primary,
       ),
-      BabyTrackerScreen(
-        babyGender: widget.babyGender,
-        themeColor: _currentThemeColor,
-      ),
-      SelfCareScreen(themeColor: _currentThemeColor),
-      GrowthTrackerScreen(themeColor: _currentThemeColor),
       CalendarScreen(
         postpartumStart: widget.dueDate,
-        themeColor: _currentThemeColor,
+        themeColor: theme.primary,
       ),
       SettingsScreen(
         motherName: widget.motherName,
