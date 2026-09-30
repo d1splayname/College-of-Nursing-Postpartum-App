@@ -1,10 +1,9 @@
 import sys
 import uvicorn
-import jwt
 
 from datetime import datetime, timezone
 
-from fastapi import Cookie, Depends, FastAPI, Header, HTTPException, Response, status
+from fastapi import Depends, FastAPI, HTTPException, Response, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import PlainTextResponse
@@ -12,10 +11,18 @@ from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from app.auth import create_token, decode_token, hash_password, verify_password
-from app.database import get_db
+from app.auth import create_token, hash_password, verify_password
+from app.database import Base, engine, get_db
+from app.dependencies import authenticated_user
 from app.models import User
-from app.schemas import LoginRequest, LoginResponse, PublicUser, SessionResponse, SignupRequest
+from app.routers.calendar import router as calendar_router
+from app.schemas import (
+    LoginRequest,
+    LoginResponse,
+    PublicUser,
+    SessionResponse,
+    SignupRequest,
+)
 
 app = FastAPI(title="Nursing AI API")
 app.add_middleware(
@@ -24,6 +31,12 @@ app.add_middleware(
     allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["*"],
 )
+app.include_router(calendar_router)
+
+
+@app.on_event("startup")
+def create_calendar_tables() -> None:
+    Base.metadata.create_all(bind=engine)
 
 
 # ====== EXCEPTION HANDLERS ======
@@ -51,29 +64,6 @@ def set_session_cookie(response: Response, token: str) -> None:
         samesite="lax",
         path="/",
     )
-
-
-def bearer_or_cookie(authorization: str | None, session: str | None) -> str:
-    if authorization and authorization.lower().startswith("bearer "):
-        return authorization[7:].strip()
-    if session:
-        return session
-    raise HTTPException(status_code=401, detail="authentication required")
-
-
-def authenticated_user(
-    authorization: str | None = Header(default=None),
-    session: str | None = Cookie(default=None),
-    db: Session = Depends(get_db),
-) -> User:
-    try:
-        claims = decode_token(bearer_or_cookie(authorization, session))
-        user = db.get(User, int(claims["user_id"]))
-    except (KeyError, TypeError, ValueError, jwt.PyJWTError):
-        raise HTTPException(status_code=401, detail="invalid or expired session") from None
-    if user is None or not user.active:
-        raise HTTPException(status_code=401, detail="user is inactive")
-    return user
 
 
 # ====== HEALTH CHECK ENDPOINT ======

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'login_screen.dart';
 import 'setup_screen.dart';
-import 'privacy_and_terms.dart';
 
 import '../themes/app_themes.dart'; // For color themes
 import 'package:google_fonts/google_fonts.dart'; // For text
@@ -15,7 +14,6 @@ class WelcomeScreen extends StatelessWidget {
     final AppTheme theme = OceanTheme;
 
     return Scaffold(
-
       // Back button
       appBar: AppBar(
         backgroundColor: theme.tertiary,
@@ -28,9 +26,7 @@ class WelcomeScreen extends StatelessWidget {
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(
-                builder: (context) => const LoginScreen(),
-              ),
+              MaterialPageRoute(builder: (context) => const LoginScreen()),
             );
           },
         ),
@@ -41,13 +37,13 @@ class WelcomeScreen extends StatelessWidget {
           gradient: theme.background,
         ),
         child: SafeArea(
-          child: Padding(
+          child: SingleChildScrollView(
             padding: const EdgeInsets.all(30.0),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                const Spacer(),
-                
+                const SizedBox(height: 24),
+
                 // App Icon/Logo
                 Container(
                   padding: const EdgeInsets.symmetric(
@@ -77,21 +73,54 @@ class WelcomeScreen extends StatelessWidget {
                       ),
                     ],
                   ),
+                  child: const Icon(
+                    Icons.favorite,
+                    size: 80,
+                    color: Color(0xFF9C88D9),
+                  ),
                 ),
-                
-                const SizedBox(height: 50),
-                
-                // Feature highlights
-                _buildFeature(Icons.child_care, 'Track baby\'s feeding, sleep & diapers'),
+
+                const SizedBox(height: 40),
+
+                const Text(
+                  'We\'re glad you\'re here.',
+                  style: TextStyle(
+                    fontSize: 36,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF9C88D9),
+                  ),
+                ),
+
                 const SizedBox(height: 15),
-                _buildFeature(Icons.emoji_people, 'Monitor your mood & self-care'),
+
+                Text(
+                  'Your postpartum journey companion',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 18, color: Colors.grey[700]),
+                ),
+
+                const SizedBox(height: 50),
+
+                // Feature highlights
+                _buildFeature(
+                  Icons.child_care,
+                  'Track baby\'s feeding, sleep & diapers',
+                ),
+                const SizedBox(height: 15),
+                _buildFeature(
+                  Icons.emoji_people,
+                  'Monitor your mood & self-care',
+                ),
                 const SizedBox(height: 15),
                 _buildFeature(Icons.favorite, 'Know what to expect'),
                 const SizedBox(height: 15),
-                _buildFeature(Icons.family_restroom_outlined, 'Let the people you trust help care for baby'),
-                
-                const Spacer(),
-                
+                _buildFeature(
+                  Icons.family_restroom_outlined,
+                  'Let the people you trust help care for baby',
+                ),
+
+                const SizedBox(height: 24),
+
                 // Get Started Button
                 SizedBox(
                   width: double.infinity,
@@ -122,7 +151,7 @@ class WelcomeScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                
+
                 const SizedBox(height: 20),
               ],
             ),

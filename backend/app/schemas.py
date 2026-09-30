@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, datetime
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -30,3 +30,27 @@ class LoginResponse(BaseModel):
 
 class SessionResponse(BaseModel):
     user: PublicUser
+
+
+class PostpartumProfileRequest(BaseModel):
+    birth_date: date
+
+
+class PostpartumProfileResponse(PostpartumProfileRequest):
+    pass
+
+
+class CalendarEventRequest(BaseModel):
+    title: str = Field(min_length=1, max_length=255)
+    description: str = ""
+    start_time: datetime
+    end_time: datetime
+    event_type: str = Field(default="personal", max_length=50)
+
+
+class CalendarEventResponse(CalendarEventRequest):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int | None = None
+    postpartum_stage: str | None = None
+    source: str = "personal"
