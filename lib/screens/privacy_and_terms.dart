@@ -48,7 +48,7 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
           motherName: widget.motherName,
           babyGender: widget.babyGender,
           dueDate: widget.dueDate,
-          themeColor: widget.themeColor.toARGB32(),
+          themeColor: widget.theme.primary.toARGB32(),
         ),
       );
       if (!mounted) return;
