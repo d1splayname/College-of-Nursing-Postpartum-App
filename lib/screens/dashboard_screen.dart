@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
+import '../themes/app_themes.dart';
+import 'package:google_fonts/google_fonts.dart'; // For text
 
 // Dashboard Screen (Updated with personalization and theme color)
 class DashboardScreen extends StatelessWidget {
   final String motherName;
   final String babyGender;
-  final Color themeColor;
+  final AppTheme theme;
 
   const DashboardScreen({
     super.key,
     required this.motherName,
     required this.babyGender,
-    required this.themeColor,
+    required this.theme,
   });
 
   @override
@@ -22,21 +24,14 @@ class DashboardScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Hello, $motherName 💕',
-              style: TextStyle(
+              'Hello, $motherName',
+              style: GoogleFonts.poppins(
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
-                color: themeColor,
+                color: theme.white,
               ),
             ),
-            const SizedBox(height: 10),
-            Text(
-              'You\'re doing amazing with your baby $babyGender!',
-              style: TextStyle(
-                fontSize: 18,
-                color: Colors.grey[600],
-              ),
-            ),
+
             const SizedBox(height: 30),
 
             // Quick Stats
@@ -47,7 +42,7 @@ class DashboardScreen extends StatelessWidget {
                     'Last Feeding',
                     '2h ago',
                     Icons.restaurant,
-                    themeColor,
+                    theme,
                   ),
                 ),
                 const SizedBox(width: 15),
@@ -56,27 +51,28 @@ class DashboardScreen extends StatelessWidget {
                     'Last Sleep',
                     '3h ago',
                     Icons.bedtime,
-                    themeColor.withValues(alpha: 0.7),
+                    theme,
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 30),
+            const SizedBox(height: 60),
 
-            const Text(
+            Text(
               'Today\'s Goals',
-              style: TextStyle(
+              style: GoogleFonts.poppins(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
+                color: theme.black,
               ),
             ),
             const SizedBox(height: 15),
 
             // Self-care checklist
-            _buildChecklistItem('Drink 8 glasses of water', true, themeColor),
-            _buildChecklistItem('Take your vitamins', true, themeColor),
-            _buildChecklistItem('Rest for 30 minutes', false, themeColor),
-            _buildChecklistItem('Eat a healthy meal', false, themeColor),
+            _buildChecklistItem('Drink 8 glasses of water', true, theme),
+            _buildChecklistItem('Take your vitamins', true, theme),
+            _buildChecklistItem('Rest for 30 minutes', false, theme),
+            _buildChecklistItem('Eat a healthy meal', false, theme),
 
             const Spacer(),
 
@@ -84,17 +80,17 @@ class DashboardScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: themeColor.withValues(alpha: 0.3),
+                color: theme.card,
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Row(
                 children: [
-                  Icon(Icons.spa, color: themeColor, size: 30),
+                  Icon(Icons.spa, color: theme.icon, size: 30),
                   const SizedBox(width: 15),
-                  const Expanded(
+                  Expanded(
                     child: Text(
                       'Remember: Your well-being matters too',
-                      style: TextStyle(
+                      style: GoogleFonts.poppins(
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
                       ),
@@ -109,15 +105,15 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStatCard(String label, String value, IconData icon, Color color) {
+  Widget _buildStatCard(String label, String value, IconData icon, AppTheme theme) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.primary,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: color.withValues(alpha: 0.3),
+            color: theme.secondary.withValues(alpha: 0.3),
             blurRadius: 10,
             offset: const Offset(0, 5),
           ),
@@ -125,11 +121,11 @@ class DashboardScreen extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Icon(icon, color: color, size: 35),
+          Icon(icon, color: theme.icon, size: 35),
           const SizedBox(height: 10),
           Text(
             value,
-            style: const TextStyle(
+            style: GoogleFonts.poppins(
               fontSize: 22,
               fontWeight: FontWeight.bold,
             ),
@@ -138,9 +134,9 @@ class DashboardScreen extends StatelessWidget {
           Text(
             label,
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: GoogleFonts.poppins(
               fontSize: 12,
-              color: Colors.grey[600],
+              color: theme.black,
             ),
           ),
         ],
@@ -148,22 +144,22 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildChecklistItem(String text, bool checked, Color themeColor) {
+  Widget _buildChecklistItem(String text, bool checked, AppTheme theme) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         children: [
           Icon(
             checked ? Icons.check_circle : Icons.circle_outlined,
-            color: checked ? themeColor : Colors.grey,
+            color: checked ? theme.card : theme.black,
           ),
           const SizedBox(width: 10),
           Text(
             text,
-            style: TextStyle(
+            style: GoogleFonts.poppins(
               fontSize: 16,
               decoration: checked ? TextDecoration.lineThrough : null,
-              color: checked ? Colors.grey : Colors.black87,
+              color: checked ? theme.card : theme.black,
             ),
           ),
         ],

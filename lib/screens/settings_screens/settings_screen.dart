@@ -3,8 +3,10 @@ import '../../auth_service.dart';
 import '../login_screen.dart';
 import '../privacy_and_terms.dart';
 import '../../terms_and_conditions.dart';
+import 'family_screen.dart';
 
 import '../../themes/app_themes.dart';
+
 
 // Settings Screen with Theme Changer
 class SettingsScreen extends StatelessWidget {
@@ -36,11 +38,11 @@ class SettingsScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Settings ⚙️',
+              'Settings',
               style: TextStyle(
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
-                color: themeColor,
+                color: theme.white,
               ),
             ),
             const SizedBox(height: 10),
@@ -48,7 +50,7 @@ class SettingsScreen extends StatelessWidget {
               'Manage your account and preferences',
               style: TextStyle(
                 fontSize: 16,
-                color: Colors.grey[600],
+                color: theme.white,
               ),
             ),
             const SizedBox(height: 30),
@@ -80,7 +82,7 @@ class SettingsScreen extends StatelessWidget {
                   const SizedBox(height: 15),
                   Row(
                     children: [
-                      Icon(Icons.person, color: themeColor),
+                      Icon(Icons.person, color: theme.icon),
                       const SizedBox(width: 10),
                       Text(
                         motherName,
@@ -91,7 +93,7 @@ class SettingsScreen extends StatelessWidget {
                   const SizedBox(height: 10),
                   Row(
                     children: [
-                      Icon(Icons.child_care, color: themeColor),
+                      Icon(Icons.child_care, color: theme.icon),
                       const SizedBox(width: 10),
                       Text(
                         'Baby Gender: $babyGender',
@@ -99,11 +101,41 @@ class SettingsScreen extends StatelessWidget {
                       ),
                     ],
                   ),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Icon(Icons.house_outlined, color: theme.icon),
+                      const SizedBox(width: 10),
+                      Text(
+                        'Family Members:', // $familyMembers',
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                    ],
+                  ),                  
                 ],
               ),
             ),
 
             const SizedBox(height: 20),
+
+            // Manage Family Accounts
+            _buildSettingOption(
+              context,
+              'Your Family',
+              'Manage accounts connected to your child',
+              Icons.family_restroom_outlined,
+              theme.icon,
+              () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => FamilyScreen(
+                      theme: theme,
+                    ),
+                  ),
+                );
+              },
+            ),            
 
             // Change Theme Color Option
             _buildSettingOption(
@@ -111,7 +143,7 @@ class SettingsScreen extends StatelessWidget {
               'Change Theme Color',
               'Choose your preferred color theme',
               Icons.palette_outlined,
-              themeColor,
+              theme.icon,
               () {
                 _showColorPicker(context);
               },
@@ -122,12 +154,12 @@ class SettingsScreen extends StatelessWidget {
               'Notifications',
               'Manage reminder settings',
               Icons.notifications_outlined,
-              themeColor,
+              theme.icon,
               () {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: const Text('Notification settings coming soon!'),
-                    backgroundColor: themeColor,
+                    backgroundColor: theme.icon,
                   ),
                 );
               },
@@ -138,7 +170,7 @@ class SettingsScreen extends StatelessWidget {
               'Privacy',
               'View privacy policy',
               Icons.lock_outline,
-              themeColor,
+              theme.icon,
               () {
                 Navigator.push(
                   context,
@@ -156,12 +188,12 @@ class SettingsScreen extends StatelessWidget {
               'Help & Support',
               'Get help and contact us',
               Icons.help_outline,
-              themeColor,
+              theme.icon,
               () {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: const Text('Support coming soon!'),
-                    backgroundColor: themeColor,
+                    backgroundColor: theme.tertiary,
                   ),
                 );
               },
@@ -220,8 +252,8 @@ class SettingsScreen extends StatelessWidget {
                   ),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                  foregroundColor: Colors.white,
+                  backgroundColor: theme.card,
+                  foregroundColor: theme.black,
                   padding: const EdgeInsets.symmetric(vertical: 18),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart'; 
+// import '../themes/app_themes.dart';
 
 // Baby Tracker Screen (Updated with gender and theme color)
 class BabyTrackerScreen extends StatefulWidget {
@@ -17,6 +19,7 @@ class BabyTrackerScreen extends StatefulWidget {
 
 class _BabyTrackerScreenState extends State<BabyTrackerScreen> {
   List<Map<String, dynamic>> activities = [];
+  
 
   @override
   void initState() {
@@ -37,7 +40,7 @@ class _BabyTrackerScreenState extends State<BabyTrackerScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Baby Tracker 👶',
+              'Baby Tracker',
               style: TextStyle(
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
@@ -46,7 +49,7 @@ class _BabyTrackerScreenState extends State<BabyTrackerScreen> {
             ),
             const SizedBox(height: 10),
             Text(
-              'Tracking your ${widget.babyGender.toLowerCase()}',
+              'Take care of your little one.',
               style: TextStyle(
                 fontSize: 16,
                 color: Colors.grey[600],

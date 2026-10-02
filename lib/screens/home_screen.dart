@@ -51,7 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
       DashboardScreen(
         motherName: widget.motherName,
         babyGender: widget.babyGender,
-        themeColor: theme.primary,
+        theme: theme,
       ),
       BabyTrackerScreen(
         babyGender: widget.babyGender, 

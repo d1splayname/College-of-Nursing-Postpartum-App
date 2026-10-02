@@ -3,9 +3,9 @@ import '../auth_service.dart';
 import 'welcome_screen.dart';
 import 'home_screen.dart';
 
-import '../themes/app_themes.dart'; // For color themes
-import 'package:flutter_svg/flutter_svg.dart'; // For icons
-import 'package:google_fonts/google_fonts.dart'; // For text
+import '../themes/app_themes.dart';
+import 'package:flutter_svg/flutter_svg.dart'; 
+import 'package:google_fonts/google_fonts.dart'; 
 
 // Login Screen 
 class LoginScreen extends StatefulWidget {
@@ -19,6 +19,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _isLoading = false;
+  final AppTheme theme = OceanTheme;
 
   Future<void> _handleLogin() async {
     final username = _usernameController.text.trim();
@@ -48,8 +49,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Logged in as ${response.user.username}'),
-          backgroundColor: const Color(0xFF9C88D9),
+          content: Text('Logged in as ${response.user.username}',
+          style: GoogleFonts.poppins(color: theme.black)),
+          backgroundColor: theme.card,
         ),
       );
 
@@ -92,7 +94,6 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     // Default theme (this screen only uses the default)
-    final AppTheme theme = OceanTheme;
     
     return Scaffold(
       body: Container(
@@ -156,7 +157,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             boxShadow: [
                               BoxShadow(
-                                color: theme.text.withOpacity(0.4),
+                                color: theme.black.withOpacity(0.4),
                                 blurRadius: 50,
                                 offset: const Offset(0, 0),
                               ),
@@ -168,7 +169,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             style: GoogleFonts.poppins(
                               fontSize: 46,
                               fontWeight: FontWeight.bold,
-                              color: theme.text,
+                              color: theme.black,
                             ),
                           ),
                         ),
@@ -180,10 +181,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         style: GoogleFonts.poppins(
                           fontSize: 16,
                           fontStyle: FontStyle.italic,
-                          color: theme.text,
+                          color: theme.black,
                           shadows: [
                             Shadow(
-                              color: theme.text.withOpacity(0.5),
+                              color: theme.black.withOpacity(0.5),
                               offset: const Offset(0,0),
                               blurRadius: 20,
                             ),
@@ -198,7 +199,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           labelText: 'Username',
                           filled: true,
                           fillColor: theme.primary,
-                          prefixIcon: Icon(Icons.person, color: theme.text),
+                          prefixIcon: Icon(Icons.person, color: theme.black),
                           
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(17),
@@ -210,7 +211,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(17),
                             borderSide: BorderSide(
-                              color: theme.text,
+                              color: theme.black,
                               width: 1,
                             ),
                           ), 
@@ -224,7 +225,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           labelText: 'Password',
                           filled: true,
                           fillColor: theme.primary,
-                          prefixIcon: Icon(Icons.lock, color: theme.text),
+                          prefixIcon: Icon(Icons.lock, color: theme.black),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(17),
                             borderSide: BorderSide(
@@ -235,7 +236,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(17),
                             borderSide: BorderSide(
-                              color: theme.text,
+                              color: theme.black,
                               width: 1,
                             ),
                           ),                      
@@ -265,7 +266,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
-                              color: theme.text,
+                              color: theme.black,
                             ),
                           ),
                         ),

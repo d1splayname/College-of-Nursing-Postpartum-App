@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'themes/app_themes.dart';
 import 'auth_service.dart';
 import 'screens/home_screen.dart';
 import 'screens/login_screen.dart';
@@ -39,9 +40,7 @@ class _AuthGateState extends State<AuthGate> {
           motherName: profile?.motherName ?? session.response.user.username,
           babyGender: profile?.babyGender ?? 'Neutral',
           dueDate: profile?.dueDate ?? DateTime.now(),
-          themeColor: profile == null
-              ? const Color(0xFF9C88D9)
-              : Color(profile.themeColor),
+          theme: OceanTheme,
         );
       },
     );
