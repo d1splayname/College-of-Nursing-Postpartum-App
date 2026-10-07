@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'themes/app_themes.dart'; // For color themes
 
+import 'auth_service.dart';
+import 'calendar_service.dart';
+
 class GrowthTrackerScreen extends StatefulWidget {
   final Color themeColor;
   
@@ -14,6 +17,7 @@ class GrowthTrackerScreen extends StatefulWidget {
 }
 
 class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
+  final CalendarService _calendarService = CalendarService();
   int recoveryStage = 0;
   int completedTasks = 0;
 
@@ -40,16 +44,30 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
     'Week 9+',
   ];
 
-  void completeTask() {
-    setState(() {
-      completedTasks++;
-      // Move to next stage every 5 completed tasks
-      if (completedTasks >= 5 && recoveryStage < plantEmojis.length - 1) {
-        recoveryStage++;
-        completedTasks = 0;
-        _showCelebration();
-      }
-    });
+  Future<void> completeTask() async {
+    try {
+      await _calendarService.logActivity(
+        title: 'Self-care task completed',
+        description: 'A recovery task was completed.',
+      );
+
+      if (!mounted) return;
+
+      setState(() {
+        completedTasks++;
+        if (completedTasks >= 5 && recoveryStage < plantEmojis.length - 1) {
+          recoveryStage++;
+          completedTasks = 0;
+          _showCelebration();
+        }
+      });
+    } on ApiException catch (error) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(error.message)));
+    }
   }
 
   void _showCelebration() {
