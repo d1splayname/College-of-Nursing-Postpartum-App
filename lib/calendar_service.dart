@@ -69,6 +69,7 @@ class CalendarService {
     required String description,
     required DateTime startTime,
     required DateTime endTime,
+    String eventType = 'personal',
   }) async {
     final response = await http.post(
       Uri.parse('$_apiBaseUrl/api/calendar/events'),
@@ -78,7 +79,7 @@ class CalendarService {
         'description': description,
         'start_time': startTime.toIso8601String(),
         'end_time': endTime.toIso8601String(),
-        'event_type': 'personal',
+        'event_type': eventType,
       }),
     );
     if (response.statusCode != 201) {
@@ -90,6 +91,20 @@ class CalendarService {
     }
     return CalendarEvent.fromJson(
       jsonDecode(response.body) as Map<String, dynamic>,
+    );
+  }
+
+  Future<CalendarEvent> logActivity({
+    required String title,
+    String description = '',
+  }) {
+    final now = DateTime.now();
+    return createEvent(
+      title: title,
+      description: description,
+      startTime: now,
+      endTime: now.add(const Duration(minutes: 1)),
+      eventType: 'activity',
     );
   }
 

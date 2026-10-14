@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../auth_service.dart';
+import '../calendar_service.dart';
+
 // Baby Tracker Screen (Updated with gender and theme color)
 class BabyTrackerScreen extends StatefulWidget {
   final String babyGender;
@@ -16,6 +19,7 @@ class BabyTrackerScreen extends StatefulWidget {
 }
 
 class _BabyTrackerScreenState extends State<BabyTrackerScreen> {
+  final CalendarService _calendarService = CalendarService();
   List<Map<String, dynamic>> activities = [];
 
   @override
@@ -185,22 +189,37 @@ class _BabyTrackerScreenState extends State<BabyTrackerScreen> {
     );
   }
 
-  void _addActivity(String type, IconData icon) {
-    setState(() {
-      activities.insert(0, {
-        'type': type,
-        'time': 'Just now',
-        'icon': icon,
-        'color': widget.themeColor,
+  Future<void> _addActivity(String type, IconData icon) async {
+    try {
+      await _calendarService.logActivity(
+        title: 'Baby $type',
+        description: '$type recorded from Baby Tracker',
+      );
+
+      if (!mounted) return;
+
+      setState(() {
+        activities.insert(0, {
+          'type': type,
+          'time': 'Just now',
+          'icon': icon,
+          'color': widget.themeColor,
+        });
       });
-    });
-    
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('$type logged!'),
-        backgroundColor: widget.themeColor,
-        duration: const Duration(seconds: 2),
-      ),
-    );
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('$type logged!'),
+          backgroundColor: widget.themeColor,
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    } on ApiException catch (error) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(error.message)));
+    }
   }
 }
