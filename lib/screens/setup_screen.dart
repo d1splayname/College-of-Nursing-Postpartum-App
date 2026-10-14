@@ -6,6 +6,11 @@ import '../themes/app_themes.dart'; // For color themes
 import 'package:flutter_svg/flutter_svg.dart'; // For icons
 import 'package:google_fonts/google_fonts.dart'; // For text
 
+class AdditionalChild {
+  String? gender;
+  DateTime? dueDate;
+}
+
 // Setup Screen (Updated with gender and color selection)
 class SetupScreen extends StatefulWidget {
   const SetupScreen({super.key});
@@ -13,13 +18,13 @@ class SetupScreen extends StatefulWidget {
   @override
   State<SetupScreen> createState() => _SetupScreenState();
 }
-
 class _SetupScreenState extends State<SetupScreen> {
   final TextEditingController _motherNameController = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   DateTime? _dueDate;
   String? _selectedGender;
+  final List<AdditionalChild> _additionalChildren = [];
   AppTheme theme = OceanTheme;
 
   final Map<String, AppTheme> _themeOptions = {
@@ -27,7 +32,6 @@ class _SetupScreenState extends State<SetupScreen> {
     'Sunrise': SunriseTheme,
     'Desert': DesertTheme,
   };
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -61,9 +65,9 @@ class _SetupScreenState extends State<SetupScreen> {
                 color: theme.primary,
               ),
             ),
-            
+
             const SizedBox(height: 40),
-            
+
             // Mother's Name
             Text(
               'Your Name',
@@ -87,9 +91,8 @@ class _SetupScreenState extends State<SetupScreen> {
                 prefixIcon: Icon(Icons.person, color: theme.tertiary),
               ),
             ),
-            
+
             const SizedBox(height: 20),
-            
             // Create Your Username
             Text(
               'Username',
@@ -100,7 +103,6 @@ class _SetupScreenState extends State<SetupScreen> {
               ),
             ),
             const SizedBox(height:20),
-
             TextField(
               controller: _usernameController,
               decoration: InputDecoration(
@@ -115,8 +117,7 @@ class _SetupScreenState extends State<SetupScreen> {
               ),
             ),
             const SizedBox(height:20),
-
-            // Password 
+            // Password
             Text(
               'Choose a Password',
               style: GoogleFonts.poppins(
@@ -126,7 +127,6 @@ class _SetupScreenState extends State<SetupScreen> {
               ),
             ),
             const SizedBox(height:20),
-
             TextField(
               controller: _passwordController,
               obscureText: true,
@@ -142,7 +142,6 @@ class _SetupScreenState extends State<SetupScreen> {
               ),
             ),
             const SizedBox(height:20),
-
             // Baby's Gender
             Text(
               'Baby\'s Gender',
@@ -168,9 +167,9 @@ class _SetupScreenState extends State<SetupScreen> {
                 ),
               ],
             ),
-            
+
             const SizedBox(height: 25),
-            
+
             // Due Date
             Text(
               'Due Date / Birth Date',
@@ -228,9 +227,33 @@ class _SetupScreenState extends State<SetupScreen> {
                 ),
               ),
             ),
-            
+
+            ...List.generate(_additionalChildren.length, (index) => _buildAdditionalChild(index)),
+
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: () {
+                  setState(() {
+                    _additionalChildren.add(AdditionalChild());
+                  });
+                },
+                icon: const Icon(Icons.add),
+                label: const Text('Add Child'),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: theme.card,
+                  side: BorderSide(color: theme.card),
+                  padding: const EdgeInsets.symmetric(vertical: 15),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+              ),
+            ),
+
             const SizedBox(height: 25),
-            
+
             // Color Theme Selection
             Text(
               'Choose Your Theme',
@@ -241,7 +264,6 @@ class _SetupScreenState extends State<SetupScreen> {
               ),
             ),
             const SizedBox(height: 10),
-
             Text(
               'Don\'t worry, you can change this later.',
               style: TextStyle(
@@ -251,11 +273,10 @@ class _SetupScreenState extends State<SetupScreen> {
               ),
             ),
             const SizedBox(height: 20),
-
             Row(
               children: _themeOptions.entries.map((entry) {
                 final isSelected = theme == entry.value;
-              
+
                 String iconPath;
                 switch(entry.key) {
                   case 'Ocean':
@@ -271,7 +292,6 @@ class _SetupScreenState extends State<SetupScreen> {
                     iconPath = 'assets/icons/ocean.svg';
                     break;
                 }
-
                 return Expanded(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 5),
@@ -294,14 +314,12 @@ class _SetupScreenState extends State<SetupScreen> {
                         ),
                         child: Column(
                           children: [
-
                             SvgPicture.asset(
                               iconPath,
                               width: 90,
                               height: 90,
                             ),
                             const SizedBox(height: 8),
-
                             Text(
                               entry.key,
                               style: TextStyle(
@@ -309,7 +327,6 @@ class _SetupScreenState extends State<SetupScreen> {
                                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                               ),
                             ),
-
                             if (isSelected)
                               Icon(Icons.check_circle, color: entry.value.primary),
                           ],
@@ -320,9 +337,9 @@ class _SetupScreenState extends State<SetupScreen> {
                 ); // Expanded
               }).toList(), // map
             ), // Row
-            
+
             const SizedBox(height: 40),
-            
+
             // Continue Button
             SizedBox(
               width: double.infinity,
@@ -342,7 +359,19 @@ class _SetupScreenState extends State<SetupScreen> {
                     );
                     return;
                   }
-                  
+
+                  for (final child in _additionalChildren) {
+                    if (child.gender == null || child.dueDate == null) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Please fill in all fields for each child'),
+                          backgroundColor: theme.card,
+                        ),
+                      );
+                      return;
+                    }
+                  }
+
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -380,7 +409,6 @@ class _SetupScreenState extends State<SetupScreen> {
       ),
     );
   }
-
   Widget _buildGenderOption(String label, IconData icon, Color color) {
     final isSelected = _selectedGender == label;
     return GestureDetector(
@@ -413,6 +441,156 @@ class _SetupScreenState extends State<SetupScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildAdditionalGenderOption(int index, String label, IconData icon, Color color) {
+    final isSelected = _additionalChildren[index].gender == label;
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _additionalChildren[index].gender = label;
+        });
+      },
+      child: Container(
+        padding: const EdgeInsets.all(15),
+        decoration: BoxDecoration(
+          color: isSelected ? color.withValues(alpha: 0.3) : theme.primary,
+          borderRadius: BorderRadius.circular(15),
+          border: Border.all(
+            color: isSelected ? color : Colors.grey.shade300,
+            width: isSelected ? 3 : 1,
+          ),
+        ),
+        child: Column(
+          children: [
+            Icon(icon, color: color, size: 35),
+            const SizedBox(height: 8),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAdditionalChild(int index) {
+    final child = _additionalChildren[index];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 25),
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                'Child ${index + 2}',
+                style: GoogleFonts.poppins(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: theme.card,
+                ),
+              ),
+            ),
+            IconButton(
+              icon: const Icon(Icons.delete_outline),
+              onPressed: () {
+                setState(() {
+                  _additionalChildren.removeAt(index);
+                });
+              },
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
+        Text(
+          'Baby\'s Gender',
+          style: GoogleFonts.poppins(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: theme.primary
+          ),
+        ),
+        const SizedBox(height: 20),
+        Row(
+          children: [
+            Expanded(
+              child: _buildAdditionalGenderOption(index, 'Boy', Icons.male, const Color(0xFF84B3C3)),
+            ),
+            const SizedBox(width: 15),
+            Expanded(
+              child: _buildAdditionalGenderOption(index, 'Girl', Icons.female, const Color(0xFFE89184)),
+            ),
+            const SizedBox(width: 15),
+            Expanded(
+              child: _buildAdditionalGenderOption(index, 'I\'d prefer not to say', Icons.child_care, const Color(0xFFE6C96A)),
+            ),
+          ],
+        ),
+        const SizedBox(height: 25),
+        Text(
+          'Due Date / Birth Date',
+          style: GoogleFonts.poppins(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: theme.primary
+          ),
+        ),
+        const SizedBox(height: 10),
+        GestureDetector(
+          onTap: () async {
+            final DateTime? picked = await showDatePicker(
+              context: context,
+              initialDate: child.dueDate ?? DateTime.now(),
+              firstDate: DateTime(2020),
+              lastDate: DateTime(2030),
+              builder: (context, datePickerChild) {
+                return Theme(
+                  data: Theme.of(context).copyWith(
+                    colorScheme: const ColorScheme.light(
+                      primary: Color(0xFF9C88D9),
+                    ),
+                  ),
+                  child: datePickerChild!,
+                );
+              },
+            );
+            if (picked != null) {
+              setState(() {
+                child.dueDate = picked;
+              });
+            }
+          },
+          child: Container(
+            padding: const EdgeInsets.all(18),
+            decoration: BoxDecoration(
+              color: theme.primary,
+              borderRadius: BorderRadius.circular(15),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.calendar_today, color: Color(0xFF9C88D9)),
+                const SizedBox(width: 15),
+                Text(
+                  child.dueDate == null
+                      ? 'Select date'
+                      : '${child.dueDate!.month}/${child.dueDate!.day}/${child.dueDate!.year}',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: child.dueDate == null ? Colors.grey : Colors.black87,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
