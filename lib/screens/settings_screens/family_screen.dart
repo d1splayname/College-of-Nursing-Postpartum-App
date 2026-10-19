@@ -1,13 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../themes/app_themes.dart';
+import 'family_service.dart';
+
+
+const List<String> kRelationships = [
+  'Sitter',
+  'Nanny',
+  'Grandma',
+  'Grandpa',
+  'Sibling',
+  'Aunt',
+  'Uncle',
+  'Mom',
+  'Dad',
+  'Other',
+];
 
 class FamilyScreen extends StatefulWidget {
   final AppTheme theme;
+  final FamilyService? service;
 
   const FamilyScreen({
     super.key,
     required this.theme,
+    this.service,
   });
 
   @override
@@ -15,13 +32,43 @@ class FamilyScreen extends StatefulWidget {
 }
 
 class _FamilyScreenState extends State<FamilyScreen> {
-  // Current family members
-  final List<Map<String, String>> _familyMembers = [
-    {
-      'name': 'You',
-      'relationship': 'Mom',
-    },
-  ];
+  // TODO(backend): change MockFamilyService() to ApiFamilyService()
+  late final FamilyService _service = widget.service ?? MockFamilyService();
+
+  List<FamilyMember> _members = [];
+  bool _loading = true;
+  String? _loadError;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadMembers();
+  }
+
+  Future<void> _loadMembers() async {
+    setState(() {
+      _loading = true;
+      _loadError = null;
+    });
+    try {
+      final members = await _service.fetchMembers();
+      if (!mounted) return;
+      setState(() {
+        _members = members;
+        _loading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _loadError = 'Could not load family members.';
+        _loading = false;
+      });
+    }
+  }
+
+  void _showSnack(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,52 +76,26 @@ class _FamilyScreenState extends State<FamilyScreen> {
 
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
-          gradient: theme.background,
-        ),
+        decoration: BoxDecoration(gradient: theme.background),
         child: SafeArea(
           child: Column(
             children: [
-              // App Bar
               Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 10,
-                ),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                 child: Row(
                   children: [
                     IconButton(
-                      icon: Icon(
-                        Icons.arrow_back,
-                        color: theme.black,
-                      ),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
+                      icon: Icon(Icons.arrow_back, color: theme.black),
+                      onPressed: () => Navigator.pop(context),
                     ),
                   ],
                 ),
               ),
-
               Expanded(
                 child: SingleChildScrollView(
                   padding: const EdgeInsets.fromLTRB(20, 10, 20, 30),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // -----------------------------
-                      // FAMILY MEMBERS CARD
-                      // -----------------------------
-                      _buildMembersCard(theme),
-
-                      const SizedBox(height: 20),
-
-                      // -----------------------------
-                      // ADD FAMILY MEMBER CARD
-                      // -----------------------------
-                      _buildAddMemberCard(theme),
-                    ],
-                  ),
+                  child: _buildMembersCard(theme),
                 ),
               ),
             ],
@@ -85,16 +106,13 @@ class _FamilyScreenState extends State<FamilyScreen> {
   }
 
   // ============================================================
-  // FAMILY MEMBERS CARD
+  // FAMILY MEMBERS CARD 
   // ============================================================
-
   Widget _buildMembersCard(AppTheme theme) {
     return Card(
       color: theme.primary,
       elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(18),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -108,9 +126,7 @@ class _FamilyScreenState extends State<FamilyScreen> {
                 fontWeight: FontWeight.w600,
               ),
             ),
-
             const SizedBox(height: 6),
-
             Text(
               'Manage the people connected to your child.',
               style: GoogleFonts.poppins(
@@ -118,31 +134,44 @@ class _FamilyScreenState extends State<FamilyScreen> {
                 fontSize: 13,
               ),
             ),
-
             const SizedBox(height: 18),
-
-            ..._familyMembers.map(
-              (member) => _buildMemberTile(
-                member,
-                theme,
-              ),
-            ),
+            if (_loading)
+              const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(16),
+                  child: CircularProgressIndicator(),
+                ),
+              )
+            else if (_loadError != null)
+              _buildLoadError(theme)
+            else
+              ..._members.map((m) => _buildMemberTile(m, theme)),
+            const SizedBox(height: 8),
+            _buildAddButton(theme),
           ],
         ),
       ),
     );
   }
 
-  // ============================================================
-  // INDIVIDUAL FAMILY MEMBER
-  // ============================================================
+  Widget _buildLoadError(AppTheme theme) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          _loadError!,
+          style: GoogleFonts.poppins(color: theme.black, fontSize: 13),
+        ),
+        TextButton(
+          onPressed: _loadMembers,
+          child: Text('Retry', style: GoogleFonts.poppins(color: theme.black)),
+        ),
+      ],
+    );
+  }
 
-  Widget _buildMemberTile(
-    Map<String, String> member,
-    AppTheme theme,
-  ) {
-    final bool isCurrentUser = member['name'] == 'You';
-
+  // MEMBER TILE
+  Widget _buildMemberTile(FamilyMember member, AppTheme theme) {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
@@ -150,133 +179,44 @@ class _FamilyScreenState extends State<FamilyScreen> {
         borderRadius: BorderRadius.circular(14),
       ),
       child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 14,
-          vertical: 4,
-        ),
-
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
         leading: CircleAvatar(
-          backgroundColor: theme.primary.withOpacity(0.15),
+          backgroundColor: theme.tertiary.withOpacity(0.15),
           child: Icon(
-            isCurrentUser
-                ? Icons.person
-                : Icons.person_outline,
-            color: theme.primary,
+            member.isCurrentUser ? Icons.person : Icons.person_outline,
+            color: theme.black,
           ),
         ),
-
         title: Text(
-          member['name']!,
+          member.nickname,
           style: GoogleFonts.poppins(
-            color: theme.icon,
+            color: theme.black,
             fontSize: 15,
             fontWeight: FontWeight.w600,
           ),
         ),
-
         subtitle: Text(
-          member['relationship']!,
+          member.relationship,
           style: GoogleFonts.poppins(
-            color: theme.icon.withOpacity(0.6),
+            color: theme.black.withOpacity(0.6),
             fontSize: 13,
           ),
         ),
-
         trailing: IconButton(
-          icon: Icon(
-            Icons.edit_outlined,
-            color: theme.icon,
-            size: 20,
-          ),
-          onPressed: () {
-            _editMember(member, theme);
-          },
+          icon: Icon(Icons.edit_outlined, color: theme.black, size: 20),
+          onPressed: () => _editMember(member, theme),
         ),
       ),
     );
   }
 
-  // ============================================================
-  // ADD FAMILY MEMBER CARD
-  // ============================================================
 
-  Widget _buildAddMemberCard(AppTheme theme) {
-    return Card(
-      color: theme.primary,
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(18),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Add Family Member',
-              style: GoogleFonts.poppins(
-                color: theme.black,
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-
-            const SizedBox(height: 6),
-
-            Text(
-              'Connect someone to your child\'s care team.',
-              style: GoogleFonts.poppins(
-                color: theme.black.withOpacity(0.65),
-                fontSize: 13,
-              ),
-            ),
-
-            const SizedBox(height: 18),
-
-            _buildAddOption(
-              icon: Icons.person_add_outlined,
-              title: 'Add Family Member',
-              subtitle: 'Parent, grandparent, relative, or other caregiver',
-              theme: theme,
-              onTap: () {
-                _addFamilyMember(theme);
-              },
-            ),
-
-            const SizedBox(height: 10),
-
-            _buildAddOption(
-              icon: Icons.child_care_outlined,
-              title: 'Add Caregiver',
-              subtitle: 'Sitter, nanny, or another trusted caregiver',
-              theme: theme,
-              onTap: () {
-                _addFamilyMember(
-                  theme,
-                  defaultRelationship: 'Sitter',
-                );
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // ============================================================
-  // ADD OPTION
-  // ============================================================
-
-  Widget _buildAddOption({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required AppTheme theme,
-    required VoidCallback onTap,
-  }) {
+  // SINGLE ADD BUTTON
+  Widget _buildAddButton(AppTheme theme) {
     return InkWell(
       borderRadius: BorderRadius.circular(14),
-      onTap: onTap,
+      onTap: () => _addFamilyMember(theme),
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
@@ -286,275 +226,128 @@ class _FamilyScreenState extends State<FamilyScreen> {
         child: Row(
           children: [
             CircleAvatar(
-              backgroundColor: theme.primary.withOpacity(0.15),
-              child: Icon(
-                icon,
-                color: theme.primary,
-              ),
+              backgroundColor: theme.tertiary.withOpacity(0.15),
+              child: Icon(Icons.person_add_outlined, color: theme.black),
             ),
-
             const SizedBox(width: 14),
-
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    title,
+                    'Add a Family Member',
                     style: GoogleFonts.poppins(
-                      color: theme.icon,
+                      color: theme.black,
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-
                   const SizedBox(height: 2),
-
                   Text(
-                    subtitle,
+                    'Babysitter, family member, or another trusted caregiver',
                     style: GoogleFonts.poppins(
-                      color: theme.icon.withOpacity(0.6),
+                      color: theme.black.withOpacity(0.6),
                       fontSize: 12,
                     ),
                   ),
                 ],
               ),
             ),
-
-            Icon(
-              Icons.chevron_right,
-              color: theme.icon,
-            ),
+            Icon(Icons.chevron_right, color: theme.black),
           ],
         ),
       ),
     );
   }
 
-  // ============================================================
   // ADD MEMBER
-  // ============================================================
+  Future<void> _addFamilyMember(AppTheme theme) async {
+    final added = await showDialog<FamilyMember>(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => _AddMemberDialog(theme: theme, service: _service),
+    );
 
-  void _addFamilyMember(
-    AppTheme theme, {
-    String? defaultRelationship,
-  }) {
-    final nameController = TextEditingController();
+    if (added != null && mounted) {
+      setState(() => _members.add(added));
+    }
+  }
 
-    String selectedRelationship =
-        defaultRelationship ?? 'Parent';
+
+  // EDIT MEMBER
+  void _editMember(FamilyMember member, AppTheme theme) {
+    String selectedRelationship = member.relationship;
 
     showDialog(
       context: context,
-      builder: (context) {
+      builder: (dialogContext) {
         return StatefulBuilder(
           builder: (context, setDialogState) {
             return AlertDialog(
               backgroundColor: theme.primary,
               title: Text(
-                'Add Family Member',
-                style: GoogleFonts.poppins(
-                  color: theme.black,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  TextField(
-                    controller: nameController,
-                    style: GoogleFonts.poppins(
-                      color: theme.icon,
-                    ),
-                    decoration: InputDecoration(
-                      labelText: 'Name',
-                      labelStyle: GoogleFonts.poppins(
-                        color: theme.black.withOpacity(0.7),
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 15),
-
-                  DropdownButtonFormField<String>(
-                    value: selectedRelationship,
-                    decoration: InputDecoration(
-                      labelText: 'Relationship',
-                      labelStyle: GoogleFonts.poppins(
-                        color: theme.black.withOpacity(0.7),
-                      ),
-                    ),
-                    items: [
-                      'Mom',
-                      'Dad',
-                      'Grandma',
-                      'Grandpa',
-                      'Sibling',
-                      'Aunt',
-                      'Uncle',
-                      'Sitter',
-                      'Nanny',
-                      'Other',
-                    ].map((relationship) {
-                      return DropdownMenuItem(
-                        value: relationship,
-                        child: Text(
-                          relationship,
-                          style: GoogleFonts.poppins(
-                            color: theme.secondary,
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      if (value != null) {
-                        setDialogState(() {
-                          selectedRelationship = value;
-                        });
-                      }
-                    },
-                  ),
-                ],
-              ),
-
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: Text(
-                    'Cancel',
-                    style: GoogleFonts.poppins(
-                      color: theme.icon,
-                    ),
-                  ),
-                ),
-
-                TextButton(
-                  onPressed: () {
-                    if (nameController.text.trim().isEmpty) {
-                      return;
-                    }
-
-                    setState(() {
-                      _familyMembers.add({
-                        'name': nameController.text.trim(),
-                        'relationship': selectedRelationship,
-                      });
-                    });
-
-                    Navigator.pop(context);
-                  },
-                  child: Text(
-                    'Add',
-                    style: GoogleFonts.poppins(
-                      color: theme.primary,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ],
-            );
-          },
-        );
-      },
-    );
-  }
-
-  // ============================================================
-  // EDIT MEMBER
-  // ============================================================
-
-  void _editMember(
-    Map<String, String> member,
-    AppTheme theme,
-  ) {
-    String selectedRelationship = member['relationship']!;
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setDialogState) {
-            return AlertDialog(
-              backgroundColor: theme.black,
-
-              title: Text(
-                member['name'] == 'You'
+                member.isCurrentUser
                     ? 'Edit Your Relationship'
-                    : 'Edit Family Member',
+                    : 'Edit ${member.nickname}',
                 style: GoogleFonts.poppins(
                   color: theme.black,
                   fontWeight: FontWeight.w600,
                 ),
               ),
-
               content: DropdownButtonFormField<String>(
                 value: selectedRelationship,
                 decoration: InputDecoration(
                   labelText: 'Relationship',
                   labelStyle: GoogleFonts.poppins(
-                    color: theme.icon.withOpacity(0.7),
+                    color: theme.black.withOpacity(0.7),
                   ),
                 ),
-                items: [
-                  'Mom',
-                  'Dad',
-                  'Grandma',
-                  'Grandpa',
-                  'Sibling',
-                  'Aunt',
-                  'Uncle',
-                  'Sitter',
-                  'Nanny',
-                  'Other',
-                ].map((relationship) {
-                  return DropdownMenuItem(
-                    value: relationship,
-                    child: Text(
-                      relationship,
-                      style: GoogleFonts.poppins(
-                        color: theme.tertiary,
-                      ),
-                    ),
-                  );
-                }).toList(),
+                items: kRelationships
+                    .map((r) => DropdownMenuItem(
+                          value: r,
+                          child: Text(
+                            r,
+                            style: GoogleFonts.poppins(color: theme.black),
+                          ),
+                        ))
+                    .toList(),
                 onChanged: (value) {
                   if (value != null) {
-                    setDialogState(() {
-                      selectedRelationship = value;
-                    });
+                    setDialogState(() => selectedRelationship = value);
                   }
                 },
               ),
-
               actions: [
-                if (member['name'] != 'You')
+                if (!member.isCurrentUser)
                   TextButton(
-                    onPressed: () {
-                      setState(() {
-                        _familyMembers.remove(member);
-                      });
-
-                      Navigator.pop(context);
+                    onPressed: () async {
+                      Navigator.pop(dialogContext);
+                      try {
+                        await _service.removeMember(member.id);
+                        if (!mounted) return;
+                        setState(() => _members.remove(member));
+                      } catch (e) {
+                        _showSnack('Could not remove member. Try again.');
+                      }
                     },
                     child: Text(
                       'Remove',
-                      style: GoogleFonts.poppins(
-                        color: Colors.red,
-                      ),
+                      style: GoogleFonts.poppins(color: Colors.red),
                     ),
                   ),
-
                 TextButton(
-                  onPressed: () {
-                    setState(() {
-                      member['relationship'] =
-                          selectedRelationship;
-                    });
-
-                    Navigator.pop(context);
+                  onPressed: () async {
+                    Navigator.pop(dialogContext);
+                    try {
+                      await _service.updateRelationship(
+                        member.id,
+                        selectedRelationship,
+                      );
+                      if (!mounted) return;
+                      setState(() => member.relationship = selectedRelationship);
+                    } catch (e) {
+                      _showSnack('Could not save changes. Try again.');
+                    }
                   },
                   child: Text(
                     'Save',
@@ -569,6 +362,212 @@ class _FamilyScreenState extends State<FamilyScreen> {
           },
         );
       },
+    );
+  }
+}
+
+
+// ADD MEMBER DIALOG
+// username (unique), nickname (displayed in UI), password (+ relationship)
+class _AddMemberDialog extends StatefulWidget {
+  final AppTheme theme;
+  final FamilyService service;
+
+  const _AddMemberDialog({required this.theme, required this.service});
+
+  @override
+  State<_AddMemberDialog> createState() => _AddMemberDialogState();
+}
+
+class _AddMemberDialogState extends State<_AddMemberDialog> {
+  final _formKey = GlobalKey<FormState>();
+  final _usernameController = TextEditingController();
+  final _nicknameController = TextEditingController();
+  final _passwordController = TextEditingController();
+
+  String _relationship = 'Sitter';
+  bool _obscurePassword = true;
+  bool _submitting = false;
+  String? _usernameError; // set when the server says the username is taken
+  String? _generalError;
+
+  @override
+  void dispose() {
+    _usernameController.dispose();
+    _nicknameController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _submit() async {
+    setState(() {
+      _usernameError = null;
+      _generalError = null;
+    });
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => _submitting = true);
+    try {
+      final member = await widget.service.addMember(
+        username: _usernameController.text.trim(),
+        nickname: _nicknameController.text.trim(),
+        password: _passwordController.text,
+        relationship: _relationship,
+      );
+      if (mounted) Navigator.pop(context, member);
+    } on UsernameTakenException {
+      setState(() {
+        _usernameError = 'That username is already taken.';
+        _submitting = false;
+      });
+      _formKey.currentState!.validate(); // re-run so the error shows
+    } catch (e) {
+      setState(() {
+        _generalError = 'Something went wrong. Please try again.';
+        _submitting = false;
+      });
+    }
+  }
+
+  InputDecoration _decoration(String label, {Widget? suffix}) {
+    return InputDecoration(
+      labelText: label,
+      suffixIcon: suffix,
+      labelStyle: GoogleFonts.poppins(
+        color: widget.theme.black.withOpacity(0.7),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = widget.theme;
+    final textStyle = GoogleFonts.poppins(color: theme.black);
+
+    return AlertDialog(
+      backgroundColor: theme.primary,
+      title: Text(
+        'Add a Family Member',
+        style: GoogleFonts.poppins(
+          color: theme.black,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+      content: SingleChildScrollView(
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextFormField(
+                controller: _usernameController,
+                style: textStyle,
+                enabled: !_submitting,
+                autocorrect: false,
+                textInputAction: TextInputAction.next,
+                decoration: _decoration('Username'),
+                onChanged: (_) {
+                  if (_usernameError != null) {
+                    setState(() => _usernameError = null);
+                  }
+                },
+                validator: (value) {
+                  if (_usernameError != null) return _usernameError;
+                  final v = value?.trim() ?? '';
+                  if (v.isEmpty) return 'Enter a username';
+                  if (v.length < 3) return 'At least 3 characters';
+                  if (v.contains(' ')) return 'No spaces allowed';
+                  return null;
+                },
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: _nicknameController,
+                style: textStyle,
+                enabled: !_submitting,
+                textInputAction: TextInputAction.next,
+                decoration: _decoration('Nickname'),
+                validator: (value) => (value?.trim().isEmpty ?? true)
+                    ? 'Enter a nickname'
+                    : null,
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: _passwordController,
+                style: textStyle,
+                enabled: !_submitting,
+                obscureText: _obscurePassword,
+                decoration: _decoration(
+                  'Password',
+                  suffix: IconButton(
+                    icon: Icon(
+                      _obscurePassword
+                          ? Icons.visibility_outlined
+                          : Icons.visibility_off_outlined,
+                      color: theme.black,
+                    ),
+                    onPressed: () =>
+                        setState(() => _obscurePassword = !_obscurePassword),
+                  ),
+                ),
+                validator: (value) {
+                  if ((value ?? '').length < 8) {
+                    return 'At least 8 characters';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 12),
+              DropdownButtonFormField<String>(
+                value: _relationship,
+                decoration: _decoration('Relationship'),
+                items: kRelationships
+                    .map((r) => DropdownMenuItem(
+                          value: r,
+                          child: Text(r, style: textStyle),
+                        ))
+                    .toList(),
+                onChanged: _submitting
+                    ? null
+                    : (value) {
+                        if (value != null) {
+                          setState(() => _relationship = value);
+                        }
+                      },
+              ),
+              if (_generalError != null) ...[
+                const SizedBox(height: 12),
+                Text(
+                  _generalError!,
+                  style: GoogleFonts.poppins(color: Colors.red, fontSize: 12),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: _submitting ? null : () => Navigator.pop(context),
+          child: Text('Cancel', style: textStyle),
+        ),
+        TextButton(
+          onPressed: _submitting ? null : _submit,
+          child: _submitting
+              ? const SizedBox(
+                  width: 18,
+                  height: 18,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : Text(
+                  'Add',
+                  style: GoogleFonts.poppins(
+                    color: theme.black,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+        ),
+      ],
     );
   }
 }
