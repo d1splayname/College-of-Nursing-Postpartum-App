@@ -16,6 +16,7 @@ migrate_working_dir/
 !.env.example
 backend/.env
 backend/.env.*
+backend/.venv*/
 
 # IntelliJ related
 *.iml

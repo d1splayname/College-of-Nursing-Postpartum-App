@@ -167,7 +167,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             'Welcome back',
                             textAlign: TextAlign.center,
                             style: GoogleFonts.poppins(
-                              fontSize: 46,
+                              fontSize: 30,
                               fontWeight: FontWeight.bold,
                               color: theme.black,
                             ),

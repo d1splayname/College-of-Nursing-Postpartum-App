@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kDebugMode;
 
 import 'themes/app_themes.dart';
 import 'auth_service.dart';
@@ -13,6 +14,7 @@ AppTheme _themeForProfile(SessionProfile? profile) {
   if (savedColor == DesertTheme.primary.value) return DesertTheme;
   return OceanTheme;
 }
+const _previewHomeEnabled = bool.fromEnvironment('PREVIEW_HOME');
 
 class AuthGate extends StatefulWidget {
   const AuthGate({super.key});
@@ -27,11 +29,22 @@ class _AuthGateState extends State<AuthGate> {
   @override
   void initState() {
     super.initState();
-    _session = AuthService().restoreSession();
+    _session = kDebugMode && _previewHomeEnabled
+        ? Future.value(null)
+        : AuthService().restoreSession();
   }
 
   @override
   Widget build(BuildContext context) {
+    if (kDebugMode && _previewHomeEnabled) {
+      return HomeScreen(
+        motherName: 'Taylor',
+        babyGender: 'Neutral',
+        dueDate: DateTime.now(),
+        theme: OceanTheme,
+      );
+    }
+
     return FutureBuilder<StoredSession?>(
       future: _session,
       builder: (context, snapshot) {
