@@ -12,6 +12,7 @@ class PrivacyScreen extends StatefulWidget {
   final String password;
   final String babyGender;
   final DateTime dueDate;
+  final List<ChildProfile> additionalChildren;
   final AppTheme theme;
 
   const PrivacyScreen({
@@ -21,6 +22,7 @@ class PrivacyScreen extends StatefulWidget {
     required this.password,
     required this.babyGender,
     required this.dueDate,
+    this.additionalChildren = const [],
     required this.theme,
   });
 
@@ -48,6 +50,7 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
           motherName: widget.motherName,
           babyGender: widget.babyGender,
           dueDate: widget.dueDate,
+          additionalChildren: widget.additionalChildren,
           themeColor: widget.theme.primary.toARGB32(),
         ),
       );

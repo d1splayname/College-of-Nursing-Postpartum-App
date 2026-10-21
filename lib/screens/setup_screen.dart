@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 //import 'welcome_screen.dart';
 import 'privacy_and_terms.dart';
+import '../auth_service.dart';
 
 import '../themes/app_themes.dart'; // For color themes
 import 'package:flutter_svg/flutter_svg.dart'; // For icons
@@ -382,6 +383,8 @@ class _SetupScreenState extends State<SetupScreen> {
                         babyGender: _selectedGender!,
                         dueDate: _dueDate!,
                         theme: theme,
+                        additionalChildren: _additionalChildren.map((child) => ChildProfile(gender: child.gender!, dueDate: child.dueDate!)).toList(),
+                        
                       ),
                     ),
                   );
