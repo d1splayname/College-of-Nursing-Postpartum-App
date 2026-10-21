@@ -63,6 +63,7 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
             babyGender: widget.babyGender,
             dueDate: widget.dueDate,
             theme: widget.theme,
+            children: [ChildProfile(gender: widget.babyGender, dueDate: widget.dueDate), ...widget.additionalChildren],
           ),
         ),
         (route) => false,

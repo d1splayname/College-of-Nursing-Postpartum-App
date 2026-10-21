@@ -66,6 +66,7 @@ class _AuthGateState extends State<AuthGate> {
           motherName: profile?.motherName ?? session.response.user.username,
           babyGender: profile?.babyGender ?? 'Neutral',
           dueDate: profile?.dueDate ?? DateTime.now(),
+          children: profile?.children ?? const [],
           theme: _themeForProfile(profile),
         );
       },

@@ -229,7 +229,7 @@ class SettingsScreen extends StatelessWidget {
                           ),
                           ElevatedButton(
                             onPressed: () async {
-                              await AuthService().clearSession();
+                              await AuthService().logout();
                               Navigator.of(context).pushAndRemoveUntil(
                                 MaterialPageRoute(
                                   builder: (context) => const LoginScreen(),

@@ -40,10 +40,12 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     try {
-      final response = await AuthService().login(
+      final authService = AuthService();
+      final response = await authService.login(
         username: username,
         password: password,
       );
+      final profile = (await authService.restoreSession())?.profile;
 
       if (!mounted) return;
 
@@ -59,10 +61,17 @@ class _LoginScreenState extends State<LoginScreen> {
         context,
         MaterialPageRoute(
           builder: (context) => HomeScreen(
-            motherName: response.user.username,
-            babyGender: 'Neutral',
-            dueDate: DateTime.now(),
-            theme: OceanTheme,
+            motherName: profile?.motherName ?? response.user.username,
+            babyGender: profile?.babyGender ?? 'Neutral',
+            dueDate: profile?.dueDate ?? DateTime.now(),
+            children: profile?.children ?? const [],
+            theme: profile == null
+                ? OceanTheme
+                : profile.themeColor == SunriseTheme.primary.toARGB32()
+                    ? SunriseTheme
+                    : profile.themeColor == DesertTheme.primary.toARGB32()
+                        ? DesertTheme
+                        : OceanTheme,
           ),
         ),
       );

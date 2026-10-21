@@ -14,6 +14,7 @@ class HomeScreen extends StatefulWidget {
   final String motherName;
   final String babyGender;
   final DateTime dueDate;
+  final List<ChildProfile> children;
   final AppTheme theme;
 
   const HomeScreen({
@@ -21,6 +22,7 @@ class HomeScreen extends StatefulWidget {
     required this.motherName,
     required this.babyGender,
     required this.dueDate,
+    this.children = const [],
     required this.theme,
   });
 
