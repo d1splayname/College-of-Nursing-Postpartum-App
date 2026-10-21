@@ -1,51 +1,60 @@
 import 'package:flutter/material.dart';
 
 class AppTheme {
+    final Color white;
+    final Color black;
+    final Gradient background;
+
     final Color primary;
     final Color secondary;
     final Color tertiary;
-    final Gradient background;
+
     final Color card;
-    final Color text;
     final Color icon;
+    final Color text;
 
     const AppTheme({
+        required this.white,
+        required this.black,
+        required this.background,
+
         required this.primary,
         required this.secondary,
         required this.tertiary,
-        required this.background,
-        required this.card,
-        required this.text,
-        required this.icon,
 
+        required this.card,
+        required this.icon,
+        required this.text,
     });
 }
 
 const OceanTheme = AppTheme(
-    primary: Color(0xFFf7f4ed),     // Cream
-    secondary: Color(0xFF84B3C3),   // Light blue
+    white: Color(0xffffffff),
+    black: Color(0xff000000),
 
-    tertiary: Color (0xFF16587B),   // Dark blue
-    background: LinearGradient(     // Dark blue gradient
+    background: LinearGradient( 
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
         colors: [
-            Color(0xFF16587B),
-            Color(0xFF2697D3),
+            Color(0xFF95E0E1),
+            Color(0xFFFFEAC2),
         ],
     ),
 
-    card: Color(0xFFFAE18E),        // Yellow
-    text: Color(0xFF000000),        // Black
-    icon: Color(0xFFFFD95C),        // Yellow
+    // Primary colors (from lighter to darker)    
+    primary: Color(0xB3FFFFFF),     // white with 70% opacity
+    secondary: Color(0xFFFFEAC2),   // cream
+    tertiary: Color (0xFF95E0E1),   // teal
 
+    card: Color(0xFF1E4D58),        // dark teal
+    icon: Color(0xFFFFFFFF),        // white
+    text: Color(0xFF1A2B3C),        // navy
 );
 
 const SunriseTheme = AppTheme(
-    primary: Color(0xFFF3EEE8),     // White
-    secondary: Color(0xFFD9B8AE),   // Mauve
+    white: Color(0xff000000), // Swapped because the pink background is light
+    black: Color(0xffffffff), 
 
-    tertiary: Color (0xFFD9B8AE),   // Pink
     background: LinearGradient(     // Pink gradient
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
@@ -55,17 +64,20 @@ const SunriseTheme = AppTheme(
         ],
     ),
 
+    primary: Color(0xFFF3EEE8),     // White
+    secondary: Color(0xFFD9B8AE),   // Mauve
+    tertiary: Color (0xFFD9B8AE),   // Pink
+
     card: Color(0xFFB08A83),        // Slightly darker mauve
-    text: Color(0xFF5E4A48),        // Cocoa
-    icon: Color(0xFFE89184),        // Rose
+    icon: Color(0xFF5E4A48),
+    text: Color(0xFF000000),        // Black
 
 );
 
 const DesertTheme = AppTheme(
-    primary: Color(0xFFE6C96A),     // Mustard
-    secondary: Color(0xFFB64B12),   // Rust
+    white: Color(0xffffffff),
+    black: Color(0xff000000), 
 
-    tertiary: Color (0xFFCE793A),   // Orange
     background: LinearGradient(     // Orange gradient
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
@@ -75,8 +87,12 @@ const DesertTheme = AppTheme(
         ],
     ),
 
+    primary: Color(0xFFE6C96A),     // Mustard
+    secondary: Color(0xFFB64B12),   // Rust
+    tertiary: Color (0xFFCE793A),   // Orange
+
     card: Color(0xFF9AA992),        // Sage
+    icon: Color(0xFF40E0D0),
     text: Color(0xFF000000),        // Black
-    icon: Color(0xFF40E0D0),        // Turquoise
 
 );

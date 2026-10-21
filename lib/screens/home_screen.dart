@@ -5,10 +5,8 @@ import 'selfcare_screen.dart';
 import '../growth_tracker_screen.dart';
 import 'calendar_screen.dart';
 import 'settings_screens/settings_screen.dart';
+import '../themes/app_themes.dart';
 
-import '../themes/app_themes.dart'; // For color themes
-
-// Home Screen (Updated with personalization and theme color)
 class HomeScreen extends StatefulWidget {
   final String motherName;
   final String babyGender;
@@ -28,7 +26,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-
   int _selectedIndex = 0;
   late AppTheme _currentTheme;
 
@@ -38,45 +35,24 @@ class _HomeScreenState extends State<HomeScreen> {
     _currentTheme = widget.theme;
   }
 
-  void _updateThemeColor(AppTheme newTheme){
+  void _updateThemeColor(AppTheme newTheme) {
     setState(() {
       _currentTheme = newTheme;
     });
   }
 
-  Color _getBackgroundColor(Color themeColor) {
-    if (themeColor == const Color(0xFFAEC6FF)) {
-      // Boy Blue - Very light blue
-      return const Color(0xFFF0F4FF);
-    } else if (themeColor == const Color(0xFFFFB5E8)) {
-      // Girl Pink - Very light pink
-      return const Color(0xFFFFF5FA);
-    } else {
-      // Neutral Yellow - Warm cream
-      return const Color(0xFFFFFBF5);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = _currentTheme;
-
-    final List<Widget> screens = [
+    final screens = [
       DashboardScreen(
         motherName: widget.motherName,
         babyGender: widget.babyGender,
-        themeColor: theme.primary,
+        theme: theme,
       ),
-      BabyTrackerScreen(
-        babyGender: widget.babyGender, 
-        themeColor: theme.primary,
-      ),
-      SelfCareScreen(
-        themeColor: theme.primary,
-      ),
-      GrowthTrackerScreen(
-        themeColor: theme.primary,
-      ),
+      BabyTrackerScreen(babyGender: widget.babyGender, theme: theme),
+      SelfCareScreen(themeColor: theme.primary),
+      GrowthTrackerScreen(themeColor: theme.primary),
       CalendarScreen(
         postpartumStart: widget.dueDate,
         themeColor: theme.primary,
@@ -89,15 +65,11 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     ];
 
-    
     return Scaffold(
-      body: Container (
-        decoration: BoxDecoration(
-          gradient: theme.background,
-        ),
+      body: Container(
+        decoration: BoxDecoration(gradient: theme.background),
         child: screens[_selectedIndex],
       ),
-
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           boxShadow: [
@@ -129,7 +101,7 @@ class _HomeScreenState extends State<HomeScreen> {
               label: 'Self-Care',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.park), // Plant icon!
+              icon: Icon(Icons.park),
               label: 'Growth',
             ),
             BottomNavigationBarItem(
