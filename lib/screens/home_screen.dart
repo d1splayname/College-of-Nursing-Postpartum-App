@@ -27,7 +27,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-
   int _selectedIndex = 0;
   late AppTheme _currentTheme;
 
@@ -37,7 +36,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _currentTheme = widget.theme;
   }
 
-  void _updateThemeColor(AppTheme newTheme){
+  void _updateThemeColor(AppTheme newTheme) {
     setState(() {
       _currentTheme = newTheme;
     });
@@ -54,15 +53,11 @@ class _HomeScreenState extends State<HomeScreen> {
         theme: theme,
       ),
       BabyTrackerScreen(
-        babyGender: widget.babyGender, 
-        themeColor: theme.primary,
+        babyGender: widget.babyGender,
+        theme: theme,
       ),
-      SelfCareScreen(
-        themeColor: theme.primary,
-      ),
-      GrowthTrackerScreen(
-        themeColor: theme.primary,
-      ),
+      SelfCareScreen(themeColor: theme.primary),
+      GrowthTrackerScreen(themeColor: theme.primary),
       SettingsScreen(
         motherName: widget.motherName,
         babyGender: widget.babyGender,
@@ -72,54 +67,80 @@ class _HomeScreenState extends State<HomeScreen> {
     ];
 
     return Scaffold(
-      body: Container (
-        decoration: BoxDecoration(
-          gradient: theme.background,
-        ),
+      extendBody: true,
+      body: Container(
+        decoration: BoxDecoration(gradient: theme.background),
         child: screens[_selectedIndex],
       ),
-
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          boxShadow: [
-            BoxShadow(
-              color: theme.primary.withValues(alpha: 0.2),
-              blurRadius: 10,
-              offset: const Offset(0, -5),
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 25.0, vertical: 15.0),
+          child: Container(
+            height: 60.0,
+            decoration: BoxDecoration(
+              color: theme.primary,
+              borderRadius: BorderRadius.circular(30.0),
             ),
-          ],
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _buildNavItem(
+                  icon: Icons.home,
+                  index: 0,
+                  theme: theme,
+                ),
+                _buildNavItem(
+                  icon: Icons.child_friendly,
+                  index: 1,
+                  theme: theme,
+                ),
+                _buildNavItem(
+                  icon: Icons.favorite,
+                  index: 2,
+                  theme: theme,
+                ),
+                _buildNavItem(
+                  icon: Icons.park,
+                  index: 3,
+                  theme: theme,
+                ),
+                _buildNavItem(
+                  icon: Icons.settings,
+                  index: 4,
+                  theme: theme,
+                ),
+              ],
+            ),
+          ),
         ),
-        child: BottomNavigationBar(
-          currentIndex: _selectedIndex,
-          onTap: (index) {
-            setState(() {
-              _selectedIndex = index;
-            });
-          },
-          selectedItemColor: theme.card,
-          unselectedItemColor: Colors.grey,
-          type: BottomNavigationBarType.fixed,
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: 'Home',
+      ),
+    );
+  }
+
+  Widget _buildNavItem({
+    required IconData icon,
+    required int index,
+    required AppTheme theme,
+  }) {
+    final isSelected = _selectedIndex == index;
+
+    return Expanded(
+      child: GestureDetector(
+        onTap: () {
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              color: isSelected ? theme.text : theme.text.withOpacity(0.7),
+              size: 30,
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.child_care),
-              label: 'Baby',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.favorite),
-              label: 'Self-Care',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.park),  // Plant icon!
-              label: 'Growth',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.settings),
-              label: 'Settings',
-            ),
+            const SizedBox(height: 4),
+
           ],
         ),
       ),

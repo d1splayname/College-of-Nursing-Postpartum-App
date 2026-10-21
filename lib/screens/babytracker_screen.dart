@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart'; 
-// import '../themes/app_themes.dart';
+import '../themes/app_themes.dart';
 
 // Baby Tracker Screen (Updated with gender and theme color)
 class BabyTrackerScreen extends StatefulWidget {
   final String babyGender;
-  final Color themeColor;
+  final AppTheme theme;
 
   const BabyTrackerScreen({
     super.key,
     required this.babyGender,
-    required this.themeColor,
+    required this.theme,
   });
 
   @override
@@ -19,15 +18,29 @@ class BabyTrackerScreen extends StatefulWidget {
 
 class _BabyTrackerScreenState extends State<BabyTrackerScreen> {
   List<Map<String, dynamic>> activities = [];
-  
 
   @override
   void initState() {
     super.initState();
     activities = [
-      {'type': 'Feeding', 'time': '2 hours ago', 'icon': Icons.restaurant, 'color': widget.themeColor},
-      {'type': 'Diaper', 'time': '1 hour ago', 'icon': Icons.child_care, 'color': widget.themeColor.withValues(alpha: 0.7)},
-      {'type': 'Sleep', 'time': '3 hours ago', 'icon': Icons.bedtime, 'color': widget.themeColor.withValues(alpha: 0.5)},
+      {
+        'type': 'Feeding',
+        'time': '2 hours ago',
+        'icon': Icons.restaurant,
+        'color': widget.theme.card,
+      },
+      {
+        'type': 'Diaper',
+        'time': '1 hour ago',
+        'icon': Icons.child_care,
+        'color': widget.theme.card.withValues(alpha: 0.7),
+      },
+      {
+        'type': 'Sleep',
+        'time': '3 hours ago',
+        'icon': Icons.bedtime,
+        'color': widget.theme.card.withValues(alpha: 0.5),
+      },
     ];
   }
 
@@ -44,16 +57,13 @@ class _BabyTrackerScreenState extends State<BabyTrackerScreen> {
               style: TextStyle(
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
-                color: widget.themeColor,
+                color: widget.theme.text,
               ),
             ),
             const SizedBox(height: 10),
             Text(
               'Take care of your little one.',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey[600],
-              ),
+              style: TextStyle(fontSize: 16, color: widget.theme.text),
             ),
             const SizedBox(height: 30),
 
@@ -64,19 +74,19 @@ class _BabyTrackerScreenState extends State<BabyTrackerScreen> {
                 _buildActionButton(
                   'Feed',
                   Icons.restaurant,
-                  widget.themeColor,
+                  widget.theme.card,
                   () => _addActivity('Feeding', Icons.restaurant),
                 ),
                 _buildActionButton(
                   'Diaper',
                   Icons.child_care,
-                  widget.themeColor.withValues(alpha: 0.7),
+                  widget.theme.card.withValues(alpha: 0.7),
                   () => _addActivity('Diaper', Icons.child_care),
                 ),
                 _buildActionButton(
                   'Sleep',
                   Icons.bedtime,
-                  widget.themeColor.withValues(alpha: 0.5),
+                  widget.theme.card.withValues(alpha: 0.5),
                   () => _addActivity('Sleep', Icons.bedtime),
                 ),
               ],
@@ -86,10 +96,7 @@ class _BabyTrackerScreenState extends State<BabyTrackerScreen> {
 
             const Text(
               'Recent Activity',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 15),
 
@@ -107,7 +114,9 @@ class _BabyTrackerScreenState extends State<BabyTrackerScreen> {
                       borderRadius: BorderRadius.circular(15),
                       boxShadow: [
                         BoxShadow(
-                          color: (activity['color'] as Color).withValues(alpha: 0.2),
+                          color: (activity['color'] as Color).withValues(
+                            alpha: 0.2,
+                          ),
                           blurRadius: 8,
                           offset: const Offset(0, 3),
                         ),
@@ -118,7 +127,9 @@ class _BabyTrackerScreenState extends State<BabyTrackerScreen> {
                         Container(
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
-                            color: (activity['color'] as Color).withValues(alpha: 0.3),
+                            color: (activity['color'] as Color).withValues(
+                              alpha: 0.3,
+                            ),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Icon(
@@ -162,7 +173,12 @@ class _BabyTrackerScreenState extends State<BabyTrackerScreen> {
     );
   }
 
-  Widget _buildActionButton(String label, IconData icon, Color color, VoidCallback onTap) {
+  Widget _buildActionButton(
+    String label,
+    IconData icon,
+    Color color,
+    VoidCallback onTap,
+  ) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -194,14 +210,14 @@ class _BabyTrackerScreenState extends State<BabyTrackerScreen> {
         'type': type,
         'time': 'Just now',
         'icon': icon,
-        'color': widget.themeColor,
+        'color': widget.theme.card,
       });
     });
-    
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('$type logged!'),
-        backgroundColor: widget.themeColor,
+        backgroundColor: widget.theme.card,
         duration: const Duration(seconds: 2),
       ),
     );
