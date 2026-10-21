@@ -286,7 +286,7 @@ class SettingsScreen extends StatelessWidget {
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: themeOptions.entries.map((entry) {
-              final isSelected = theme == entry.value.primary;
+              final isSelected = theme == entry.value;
               return GestureDetector(
                 onTap: () {
                   onThemeColorChanged(entry.value);
