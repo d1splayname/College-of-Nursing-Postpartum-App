@@ -8,11 +8,13 @@ import '../calendar_service.dart';
 // Baby Tracker Screen (Updated with gender and theme color)
 class BabyTrackerScreen extends StatefulWidget {
   final String babyGender;
+  final List<ChildProfile> children;
   final AppTheme theme;
 
   const BabyTrackerScreen({
     super.key,
     required this.babyGender,
+    this.children = const [],
     required this.theme,
   });
 
@@ -24,6 +26,7 @@ class _BabyTrackerScreenState extends State<BabyTrackerScreen> {
   final CalendarService _calendarService = CalendarService();
   List<Map<String, dynamic>> activities = [];
   bool _isLoggingActivity = false;
+  int _selectedChildIndex = 0;
 
   @override
   void initState() {
@@ -80,6 +83,45 @@ class _BabyTrackerScreenState extends State<BabyTrackerScreen> {
               'Take care of your little one.',
               style: TextStyle(fontSize: 20, color: widget.theme.text),
             ),
+            if (widget.children.length > 1) ...[
+              const SizedBox(height: 20),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: List.generate(widget.children.length, (index) {
+                    final isSelected = _selectedChildIndex == index;
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _selectedChildIndex = index;
+                        });
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.only(right: 10),
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                        decoration: BoxDecoration(
+                          color: isSelected ? widget.theme.card : Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: widget.theme.card),
+                        ),
+                        child: Text(
+                          'Baby ${index + 1}',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: isSelected ? widget.theme.black : widget.theme.text,
+                          ),
+                        ),
+                      ),
+                    );
+                  }),
+                ),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                'Gender: ${widget.children[_selectedChildIndex].gender}',
+                style: TextStyle(fontSize: 14, color: widget.theme.text),
+              ),
+            ],
             const SizedBox(height: 30),
 
             // Quick Action Buttons
@@ -235,10 +277,12 @@ class _BabyTrackerScreenState extends State<BabyTrackerScreen> {
       _isLoggingActivity = true;
     });
 
+    final child = widget.children.length > 1 ? 'Baby ${_selectedChildIndex + 1}' : 'Baby';
+
     try {
       await _calendarService.logActivity(
-        title: 'Baby $type',
-        description: '$type recorded from Baby Tracker',
+        title: '$child $type',
+        description: '$type recorded for $child from Baby Tracker',
       );
 
       if (!mounted) return;
@@ -254,7 +298,7 @@ class _BabyTrackerScreenState extends State<BabyTrackerScreen> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('$type logged!'),
+          content: Text('$type logged for $child!'),
           backgroundColor: widget.theme.primary,
           duration: const Duration(seconds: 2),
         ),

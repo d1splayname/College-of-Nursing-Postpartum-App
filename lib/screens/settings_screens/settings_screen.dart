@@ -11,6 +11,7 @@ import '../../themes/app_themes.dart';
 class SettingsScreen extends StatelessWidget {
   final String motherName;
   final String babyGender;
+  final List<ChildProfile> children;
   final AppTheme theme;
   final Function(AppTheme) onThemeColorChanged;
 
@@ -18,6 +19,7 @@ class SettingsScreen extends StatelessWidget {
     super.key,
     required this.motherName,
     required this.babyGender,
+    this.children = const [],
     required this.theme,
     required this.onThemeColorChanged,
   });
@@ -104,11 +106,27 @@ class SettingsScreen extends StatelessWidget {
                       Icon(Icons.child_care, color: theme.text),
                       const SizedBox(width: 10),
                       Text(
-                        'Baby Gender: $babyGender',
+                        '${children.length > 1 ? 'Baby 1 Gender' : 'Baby Gender'}: $babyGender',
                         style: TextStyle(fontSize: 16, color: theme.text),
                       ),
                     ],
                   ),
+                  if (children.length > 1)
+                    ...List.generate(children.length - 1, (index) {
+                      return Padding(
+                        padding: const EdgeInsets.only(top: 10),
+                        child: Row(
+                          children: [
+                            Icon(Icons.child_care, color: theme.icon),
+                            const SizedBox(width: 10),
+                            Text(
+                              'Baby ${index + 2} Gender: ${children[index + 1].gender}',
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                          ],
+                        ),
+                      );
+                    }),
                   const SizedBox(height: 10),
                   Row(
                     children: [

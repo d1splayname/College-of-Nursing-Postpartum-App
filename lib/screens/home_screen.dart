@@ -133,7 +133,7 @@ class _HomeScreenState extends State<HomeScreen> {
         babyGender: widget.babyGender,
         theme: theme,
       ),
-      BabyTrackerScreen(babyGender: widget.babyGender, theme: theme),
+      BabyTrackerScreen(babyGender: widget.babyGender, children: widget.children, theme: theme),
       SelfCareScreen(motherName: widget.motherName, theme: theme),
       GrowthTrackerScreen(
         theme: theme,
@@ -143,6 +143,7 @@ class _HomeScreenState extends State<HomeScreen> {
       SettingsScreen(
         motherName: widget.motherName,
         babyGender: widget.babyGender,
+        children: widget.children,
         theme: theme,
         onThemeColorChanged: _updateThemeColor,
       ),
