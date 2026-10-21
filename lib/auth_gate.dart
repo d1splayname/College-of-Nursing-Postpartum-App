@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
+import 'themes/app_themes.dart';
 import 'auth_service.dart';
 import 'screens/home_screen.dart';
 import 'screens/login_screen.dart';
-import 'themes/app_themes.dart';
 
 AppTheme _themeForProfile(SessionProfile? profile) {
   if (profile == null) return OceanTheme;

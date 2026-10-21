@@ -36,7 +36,7 @@ class _SetupScreenState extends State<SetupScreen> {
         backgroundColor: theme.tertiary,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: theme.text),
+          icon: Icon(Icons.arrow_back, color: theme.black),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -335,8 +335,9 @@ class _SetupScreenState extends State<SetupScreen> {
                       _dueDate == null ) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text('Please fill in all fields'),
-                        backgroundColor: theme.card,
+                        content: Text('Please fill in all fields',
+                        style: TextStyle(color: theme.black)),
+                        backgroundColor: theme.primary,
                       ),
                     );
                     return;
@@ -358,7 +359,7 @@ class _SetupScreenState extends State<SetupScreen> {
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: theme.card,
-                  foregroundColor: theme.text,
+                  foregroundColor: theme.black,
                   padding: const EdgeInsets.symmetric(vertical: 18),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),

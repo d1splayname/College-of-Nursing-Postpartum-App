@@ -21,7 +21,7 @@ class WelcomeScreen extends StatelessWidget {
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back,
-            color: theme.text,
+            color: theme.black,
           ),
           onPressed: () {
             Navigator.push(
@@ -68,7 +68,7 @@ class WelcomeScreen extends StatelessWidget {
                         style: GoogleFonts.poppins(
                           fontSize: 36,
                           fontWeight: FontWeight.w600,
-                          color: theme.text,                              
+                          color: theme.black,                              
                         ),
                       ),
                     ],
@@ -130,7 +130,7 @@ class WelcomeScreen extends StatelessWidget {
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: theme.card,
-                      foregroundColor: theme.text,
+                      foregroundColor: theme.black,
                       padding: const EdgeInsets.symmetric(vertical: 18),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30),
@@ -178,7 +178,7 @@ class WelcomeScreen extends StatelessWidget {
             text,
             style: TextStyle(
               fontSize: 16,
-              color: theme.text,
+              color: theme.black,
             ),
           ),
         ),
