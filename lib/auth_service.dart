@@ -20,7 +20,6 @@ class AuthUser {
     return AuthUser(username: json['username'] as String? ?? '');
   }
 }
-
 class LoginResponse {
   final AuthUser user;
   final String token;
@@ -35,20 +34,64 @@ class LoginResponse {
   }
 }
 
+class ChildProfile {
+  final String gender;
+  final DateTime dueDate;
+
+  const ChildProfile({
+    required this.gender,
+    required this.dueDate,
+  });
+
+  factory ChildProfile.fromJson(Map<String, dynamic> json) {
+    return ChildProfile(
+      gender: json['gender'] as String,
+      dueDate: DateTime.parse(json['dueDate'] as String),
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    'gender': gender,
+    'dueDate': dueDate.toIso8601String(),
+  };
+}
+
 class SessionProfile {
   final String motherName;
-  final String babyGender;
-  final DateTime dueDate;
+  final List<ChildProfile> children;
   final int themeColor;
 
-  const SessionProfile({
+  SessionProfile({
     required this.motherName,
-    required this.babyGender,
-    required this.dueDate,
+    required String babyGender,
+    required DateTime dueDate,
+    required this.themeColor,
+    List<ChildProfile> additionalChildren = const [],
+  }) : children = [
+    ChildProfile(gender: babyGender, dueDate: dueDate),
+    ...additionalChildren,
+  ];
+
+  SessionProfile._({
+    required this.motherName,
+    required this.children,
     required this.themeColor,
   });
 
+  String get babyGender => children.first.gender;
+  DateTime get dueDate => children.first.dueDate;
+
   factory SessionProfile.fromJson(Map<String, dynamic> json) {
+    if (json['children'] != null) {
+      return SessionProfile._(
+        motherName: json['motherName'] as String,
+        children: (json['children'] as List)
+            .map((child) => ChildProfile.fromJson(child as Map<String, dynamic>))
+            .toList(),
+        themeColor: json['themeColor'] as int,
+      );
+    }
+
     return SessionProfile(
       motherName: json['motherName'] as String,
       babyGender: json['babyGender'] as String,
@@ -61,6 +104,7 @@ class SessionProfile {
     'motherName': motherName,
     'babyGender': babyGender,
     'dueDate': dueDate.toIso8601String(),
+    'children': children.map((child) => child.toJson()).toList(),
     'themeColor': themeColor,
   };
 }
@@ -71,13 +115,11 @@ class StoredSession {
 
   const StoredSession({required this.response, this.profile});
 }
-
 class AuthService {
   static const _apiBaseUrl = 'http://localhost:8080';
   static const _sessionCookieKey = 'session_cookie';
   static const _profileKey = 'session_profile';
   static const _storage = FlutterSecureStorage();
-
   Future<LoginResponse> signup({
     required String name,
     required String username,
@@ -96,7 +138,6 @@ class AuthService {
       failureMessage: 'Account creation failed.',
     );
   }
-
   Future<LoginResponse> login({
     required String username,
     required String password,
@@ -107,7 +148,6 @@ class AuthService {
     if (normalizedUsername.isEmpty || normalizedPassword.isEmpty) {
       throw const ApiException('Username and password are required.');
     }
-
     return _authenticate(
       endpoint: '/api/login',
       username: normalizedUsername,
@@ -116,7 +156,6 @@ class AuthService {
       failureMessage: 'Login failed.',
     );
   }
-
   Future<LoginResponse> _authenticate({
     required String endpoint,
     String? name,
@@ -156,7 +195,6 @@ class AuthService {
       );
     }
   }
-
   Future<Map<String, String>> _sessionHeader() async {
     final cookie = await _storage.read(key: _sessionCookieKey);
     return cookie == null ? {} : {'Cookie': cookie};
@@ -167,7 +205,6 @@ class AuthService {
   Future<void> saveProfile(SessionProfile profile) async {
     await _storage.write(key: _profileKey, value: jsonEncode(profile.toJson()));
   }
-
   Future<StoredSession?> restoreSession() async {
     final token = await _storage.read(key: _sessionCookieKey);
     if (token == null || token.isEmpty) return null;
@@ -184,7 +221,6 @@ class AuthService {
         await logout();
         return null;
       }
-
       final decoded = jsonDecode(response.body) as Map<String, dynamic>;
       final profileJson = await _storage.read(key: _profileKey);
       return StoredSession(
@@ -205,7 +241,6 @@ class AuthService {
       return null;
     }
   }
-
   Future<void> clearSession() async {
     await _storage.delete(key: _sessionCookieKey);
     await _storage.delete(key: _profileKey);
