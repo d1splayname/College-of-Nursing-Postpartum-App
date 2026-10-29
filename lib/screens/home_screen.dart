@@ -52,7 +52,10 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       BabyTrackerScreen(babyGender: widget.babyGender, theme: theme),
       SelfCareScreen(themeColor: theme.primary),
-      GrowthTrackerScreen(themeColor: theme.primary),
+      GrowthTrackerScreen(
+        theme: theme,
+        babyBirthday: DateTime.now().subtract(const Duration(days: 63)),
+      ),
       CalendarScreen(
         postpartumStart: widget.dueDate,
         themeColor: theme.primary,
@@ -102,7 +105,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.park),
-              label: 'Growth',
+              label: 'Learning Together',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.calendar_month),
