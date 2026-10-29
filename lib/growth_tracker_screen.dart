@@ -33,9 +33,8 @@ class GrowthTrackerScreen extends StatefulWidget {
 }
 
 class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
-
   // CONTENT: one entry per age range, one per tile.
-  // Sources: 
+  // Sources:
   //        American College of Obstetricians and Gynechologists
   //        Centers for Disease Control and Prevention
   //        American Academy of Pediatrics (AAP)
@@ -529,7 +528,6 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
       'professional about your individual needs. Seek urgent '
       'medical care for severe or concerning symptoms.';
 
-
   AppTheme get _t => widget.theme;
 
   /// Produces a short preview
@@ -543,14 +541,15 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
     return '${normalized.substring(0, maxLength).trimRight()}…';
   }
 
-
   // Age calculations
   int get _weekOfLife {
     final today = DateTime.now();
     final birth = widget.babyBirthday;
-    final days = DateTime(today.year, today.month, today.day)
-        .difference(DateTime(birth.year, birth.month, birth.day))
-        .inDays;
+    final days = DateTime(
+      today.year,
+      today.month,
+      today.day,
+    ).difference(DateTime(birth.year, birth.month, birth.day)).inDays;
     return (days < 0 ? 0 : days) ~/ 7 + 1;
   }
 
@@ -558,16 +557,21 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
   bool get _notBornYet {
     final today = DateTime.now();
     final birth = widget.babyBirthday;
-    return DateTime(birth.year, birth.month, birth.day)
-        .isAfter(DateTime(today.year, today.month, today.day));
+    return DateTime(
+      birth.year,
+      birth.month,
+      birth.day,
+    ).isAfter(DateTime(today.year, today.month, today.day));
   }
 
   int get _weeksUntilDue {
     final today = DateTime.now();
     final birth = widget.babyBirthday;
-    final days = DateTime(birth.year, birth.month, birth.day)
-        .difference(DateTime(today.year, today.month, today.day))
-        .inDays;
+    final days = DateTime(
+      birth.year,
+      birth.month,
+      birth.day,
+    ).difference(DateTime(today.year, today.month, today.day)).inDays;
     return (days / 7).ceil();
   }
 
@@ -575,12 +579,10 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
       ? (_weeksUntilDue <= 1 ? 'Due this week' : 'Due in $_weeksUntilDue weeks')
       : 'Week $_weekOfLife';
 
-
   int get _completedMonths {
     final today = DateTime.now();
     final birth = widget.babyBirthday;
-    int months =
-        (today.year - birth.year) * 12 + (today.month - birth.month);
+    int months = (today.year - birth.year) * 12 + (today.month - birth.month);
     if (today.day < birth.day) months--;
     return months < 0 ? 0 : months;
   }
@@ -593,7 +595,7 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
     return AgeRange.months7to12; // also used past 12 months
   }
 
- // UI
+  // UI
   void _openTile(TileCategory category) {
     final text = _content[_ageRange]![category]!;
     showModalBottomSheet(
@@ -812,11 +814,7 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
                     ),
                   ),
                   const SizedBox(width: 4),
-                  Icon(
-                    Icons.arrow_forward_rounded,
-                    size: 13,
-                    color: _t.black,
-                  ),
+                  Icon(Icons.arrow_forward_rounded, size: 13, color: _t.black),
                 ],
               ),
             ],
@@ -824,7 +822,5 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
         ),
       ),
     );
-  }  
-
-
+  }
 }
