@@ -1,4 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Response, status
+from datetime import datetime, timedelta
+
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -73,6 +75,22 @@ def create_calendar_event(
 ) -> CalendarEventResponse:
     if payload.end_time <= payload.start_time:
         raise HTTPException(400, "end_time must be after start_time")
+    if payload.event_type == "activity":
+        recent_duplicate = db.scalar(
+            select(CalendarEvent.id)
+            .where(
+                CalendarEvent.user_id == user.id,
+                CalendarEvent.event_type == "activity",
+                CalendarEvent.title == payload.title,
+                CalendarEvent.created_at >= datetime.utcnow() - timedelta(seconds=10),
+            )
+            .limit(1)
+        )
+        if recent_duplicate is not None:
+            raise HTTPException(
+                status.HTTP_429_TOO_MANY_REQUESTS,
+                "This activity was already logged recently.",
+            )
     event = CalendarEvent(user_id=user.id, **payload.model_dump())
     db.add(event)
     db.commit()

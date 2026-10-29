@@ -22,6 +22,7 @@ class BabyTrackerScreen extends StatefulWidget {
 class _BabyTrackerScreenState extends State<BabyTrackerScreen> {
   final CalendarService _calendarService = CalendarService();
   List<Map<String, dynamic>> activities = [];
+  bool _isLoggingActivity = false;
 
   @override
   void initState() {
@@ -184,11 +185,11 @@ class _BabyTrackerScreenState extends State<BabyTrackerScreen> {
     VoidCallback onTap,
   ) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: _isLoggingActivity ? null : onTap,
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: color.withValues(alpha: 0.3),
+          color: color.withValues(alpha: _isLoggingActivity ? 0.15 : 0.3),
           borderRadius: BorderRadius.circular(20),
         ),
         child: Column(
@@ -209,6 +210,12 @@ class _BabyTrackerScreenState extends State<BabyTrackerScreen> {
   }
 
   Future<void> _addActivity(String type, IconData icon) async {
+    if (_isLoggingActivity) return;
+
+    setState(() {
+      _isLoggingActivity = true;
+    });
+
     try {
       await _calendarService.logActivity(
         title: 'Baby $type',
@@ -239,6 +246,12 @@ class _BabyTrackerScreenState extends State<BabyTrackerScreen> {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(error.message)));
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoggingActivity = false;
+        });
+      }
     }
   }
 }

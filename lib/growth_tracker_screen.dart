@@ -1,16 +1,12 @@
 import 'package:flutter/material.dart';
-import 'themes/app_themes.dart'; // For color themes
 
 import 'auth_service.dart';
 import 'calendar_service.dart';
 
 class GrowthTrackerScreen extends StatefulWidget {
   final Color themeColor;
-  
-  const GrowthTrackerScreen({
-    super.key,
-    required this.themeColor,
-  });
+
+  const GrowthTrackerScreen({super.key, required this.themeColor});
 
   @override
   State<GrowthTrackerScreen> createState() => _GrowthTrackerScreenState();
@@ -20,6 +16,7 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
   final CalendarService _calendarService = CalendarService();
   int recoveryStage = 0;
   int completedTasks = 0;
+  bool _isSubmitting = false;
 
   final List<String> plantEmojis = ['🌱', '🌿', '🪴', '🌳'];
 
@@ -45,6 +42,12 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
   ];
 
   Future<void> completeTask() async {
+    if (_isSubmitting || _journeyComplete) return;
+
+    setState(() {
+      _isSubmitting = true;
+    });
+
     try {
       await _calendarService.logActivity(
         title: 'Self-care task completed',
@@ -67,16 +70,23 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(error.message)));
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isSubmitting = false;
+        });
+      }
     }
   }
+
+  bool get _journeyComplete =>
+      recoveryStage == plantEmojis.length - 1 && completedTasks >= 5;
 
   void _showCelebration() {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: const Text(
           '🎉 Stage Complete!',
           textAlign: TextAlign.center,
@@ -137,10 +147,7 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
               const SizedBox(height: 10),
               Text(
                 'Track your postpartum growth',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey[600],
-                ),
+                style: TextStyle(fontSize: 16, color: Colors.grey[600]),
               ),
               const SizedBox(height: 30),
 
@@ -300,7 +307,9 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      tasksNeeded > 0
+                      _journeyComplete
+                          ? 'All recovery tasks complete!'
+                          : tasksNeeded > 0
                           ? 'Complete $tasksNeeded more tasks to level up!'
                           : 'Ready to advance!',
                       style: const TextStyle(fontSize: 14),
@@ -315,7 +324,9 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: completeTask,
+                  onPressed: _isSubmitting || _journeyComplete
+                      ? null
+                      : completeTask,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: widget.themeColor,
                     foregroundColor: Colors.white,
@@ -324,12 +335,13 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
                       borderRadius: BorderRadius.circular(15),
                     ),
                   ),
-                  child: const Text(
-                    'Complete a Self-Care Task',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  child: Text(
+                    _journeyComplete
+                        ? 'Recovery Journey Complete'
+                        : _isSubmitting
+                        ? 'Saving...'
+                        : 'Complete a Self-Care Task',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
@@ -378,10 +390,7 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
   Widget _buildTip(String text) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Text(
-        text,
-        style: const TextStyle(fontSize: 14, height: 1.5),
-      ),
+      child: Text(text, style: const TextStyle(fontSize: 14, height: 1.5)),
     );
   }
 }
