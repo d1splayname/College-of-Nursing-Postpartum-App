@@ -23,6 +23,8 @@ class _SetupScreenState extends State<SetupScreen> {
   final TextEditingController _motherNameController = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
+  final FocusNode _confirmPasswordFocus = FocusNode();
   DateTime? _dueDate;
   String? _selectedGender;
   final List<AdditionalChild> _additionalChildren = [];
@@ -33,6 +35,37 @@ class _SetupScreenState extends State<SetupScreen> {
     'Sunrise': SunriseTheme,
     'Desert': DesertTheme,
   };
+
+  @override
+  void initState() {
+    super.initState();
+    _confirmPasswordFocus.addListener(() {
+      if (!_confirmPasswordFocus.hasFocus &&
+          _confirmPasswordController.text.isNotEmpty &&
+          _passwordController.text != _confirmPasswordController.text) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Passwords do not match',
+              style: TextStyle(color: theme.black),
+            ),
+            backgroundColor: theme.primary,
+          ),
+        );
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _motherNameController.dispose();
+    _usernameController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    _confirmPasswordFocus.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -133,6 +166,31 @@ class _SetupScreenState extends State<SetupScreen> {
               obscureText: true,
               decoration: InputDecoration(
                 hintText: 'Enter a Strong Password',
+                filled: true,
+                fillColor: theme.primary,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(15),
+                  borderSide: BorderSide.none,
+                ),
+                prefixIcon: Icon(Icons.lock_outline, color: theme.tertiary),
+              ),
+            ),
+            const SizedBox(height:20),
+            Text(
+              'Confirm Password',
+              style: GoogleFonts.poppins(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: theme.primary,
+              ),
+            ),
+            const SizedBox(height:20),
+            TextField(
+              controller: _confirmPasswordController,
+              focusNode: _confirmPasswordFocus,
+              obscureText: true,
+              decoration: InputDecoration(
+                hintText: 'Re-enter your password',
                 filled: true,
                 fillColor: theme.primary,
                 border: OutlineInputBorder(
@@ -349,11 +407,23 @@ class _SetupScreenState extends State<SetupScreen> {
                   if (_motherNameController.text.isEmpty ||
                       _usernameController.text.isEmpty ||
                       _passwordController.text.isEmpty ||
+                      _confirmPasswordController.text.isEmpty ||
                       _selectedGender == null ||
                       _dueDate == null ) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text('Please fill in all fields',
+                        style: TextStyle(color: theme.black)),
+                        backgroundColor: theme.primary,
+                      ),
+                    );
+                    return;
+                  }
+
+                  if (_passwordController.text != _confirmPasswordController.text) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Passwords do not match',
                         style: TextStyle(color: theme.black)),
                         backgroundColor: theme.primary,
                       ),
@@ -412,6 +482,7 @@ class _SetupScreenState extends State<SetupScreen> {
       ),
     );
   }
+
   Widget _buildGenderOption(String label, IconData icon, Color color) {
     final isSelected = _selectedGender == label;
     return GestureDetector(
