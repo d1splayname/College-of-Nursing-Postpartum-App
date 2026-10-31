@@ -131,6 +131,7 @@ class _HomeScreenState extends State<HomeScreen> {
       DashboardScreen(
         motherName: widget.motherName,
         babyGender: widget.babyGender,
+        children: widget.children,
         theme: theme,
       ),
       BabyTrackerScreen(babyGender: widget.babyGender, children: widget.children, theme: theme),
@@ -155,7 +156,10 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           Container(
             decoration: BoxDecoration(gradient: theme.background),
-            child: screens[_selectedIndex],
+            child: IndexedStack(
+              index: _selectedIndex,
+              children: screens,
+            ),
           ),
           if (_selectedIndex != 4)
             Positioned(

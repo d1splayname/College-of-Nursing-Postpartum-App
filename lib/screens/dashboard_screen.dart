@@ -2,16 +2,21 @@ import 'package:flutter/material.dart';
 import '../themes/app_themes.dart';
 import 'package:google_fonts/google_fonts.dart'; // For text
 
+import '../auth_service.dart';
+import '../calendar_service.dart';
+
 // Dashboard Screen (Updated with personalization and theme color)
 class DashboardScreen extends StatefulWidget {
   final String motherName;
   final String babyGender;
+  final List<ChildProfile> children;
   final AppTheme theme;
 
   const DashboardScreen({
     super.key,
     required this.motherName,
     required this.babyGender,
+    this.children = const [],
     required this.theme,
   });
 
@@ -20,10 +25,56 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
+  final CalendarService _calendarService = CalendarService();
+  List<CalendarEvent> _activities = [];
+  int _selectedChildIndex = 0;
   bool _goal1 = true;
   bool _goal2 = true;
   bool _goal3 = false;
   bool _goal4 = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadActivities();
+  }
+
+  Future<void> _loadActivities() async {
+    try {
+      final events = await _calendarService.fetchEvents();
+
+      if (!mounted) return;
+
+      setState(() {
+        _activities = events
+            .where((event) => event.eventType == 'activity' && event.description.contains('from Baby Tracker'))
+            .toList();
+      });
+    } on ApiException {
+      // Leave dashboard stats empty if activities cannot be loaded.
+    }
+  }
+
+  String _lastActivityTime(String type) {
+    final baby = widget.children.length > 1 ? 'Baby ${_selectedChildIndex + 1}' : 'Baby';
+    final events = _activities.where((event) {
+      return event.title == '$baby $type' || (_selectedChildIndex == 0 && event.title == 'Baby $type');
+    }).toList()
+      ..sort((a, b) => b.startTime.compareTo(a.startTime));
+
+    if (events.isEmpty) return '--';
+
+    return _formatTime(events.first.startTime);
+  }
+
+  String _formatTime(DateTime time) {
+    final difference = DateTime.now().difference(time);
+
+    if (difference.inMinutes < 1) return 'Just now';
+    if (difference.inMinutes < 60) return '${difference.inMinutes}m ago';
+    if (difference.inHours < 24) return '${difference.inHours}h ago';
+    return '${difference.inDays}d ago';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,6 +102,40 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ),
               ),
             ),
+            if (widget.children.length > 1) ...[
+              const SizedBox(height: 20),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: List.generate(widget.children.length, (index) {
+                    final isSelected = _selectedChildIndex == index;
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _selectedChildIndex = index;
+                        });
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.only(right: 10),
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                        decoration: BoxDecoration(
+                          color: isSelected ? widget.theme.card : Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: widget.theme.card),
+                        ),
+                        child: Text(
+                          'Baby ${index + 1}',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: isSelected ? widget.theme.black : widget.theme.text,
+                          ),
+                        ),
+                      ),
+                    );
+                  }),
+                ),
+              ),
+            ],
             const SizedBox(height: 35),
 
             // Quick Stats
@@ -59,7 +144,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 Expanded(
                   child: _buildStatCard(
                     'Last Feeding',
-                    '2h ago',
+                    _lastActivityTime('Feeding'),
                     Icons.restaurant,
                     widget.theme,
                   ),
@@ -68,7 +153,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 Expanded(
                   child: _buildStatCard(
                     'Last Sleep',
-                    '3h ago',
+                    _lastActivityTime('Sleep'),
                     Icons.bedtime,
                     widget.theme,
                   ),
