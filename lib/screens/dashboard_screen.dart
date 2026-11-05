@@ -102,7 +102,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     (val) => setState(() => _goal1 = val),
                   ),
                   _buildChecklistItem(
-                    'Take your vitamins',
+                    'Schedule an appointment with the pediatrician',
                     _goal2,
                     widget.theme,
                     (val) => setState(() => _goal2 = val),
@@ -114,7 +114,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     (val) => setState(() => _goal3 = val),
                   ),
                   _buildChecklistItem(
-                    'Eat a healthy meal',
+                    'Meal prep',
                     _goal4,
                     widget.theme,
                     (val) => setState(() => _goal4 = val),

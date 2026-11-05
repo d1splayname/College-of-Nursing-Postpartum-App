@@ -97,7 +97,7 @@ class _HomeScreenState extends State<HomeScreen> {
             BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
             BottomNavigationBarItem(
               icon: Icon(Icons.child_care),
-              label: 'Baby',
+              label: 'Care Log',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.favorite),
