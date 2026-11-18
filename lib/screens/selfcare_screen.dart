@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
+import '../themes/app_themes.dart';
 
 // Self-Care Screen (Updated with theme color)
 class SelfCareScreen extends StatefulWidget {
-  final Color themeColor;
+  final String motherName;
+  final AppTheme theme;
 
-  const SelfCareScreen({super.key, required this.themeColor});
+  const SelfCareScreen({
+    super.key,
+    required this.motherName,
+    required this.theme,
+  });
 
   @override
   State<SelfCareScreen> createState() => _SelfCareScreenState();
@@ -12,12 +18,12 @@ class SelfCareScreen extends StatefulWidget {
 
 class _SelfCareScreenState extends State<SelfCareScreen> {
   String selectedMood = 'Good';
-  
+
   final List<Map<String, dynamic>> moods = [
-    {'emoji': '😊', 'label': 'Good'},
-    {'emoji': '😌', 'label': 'Calm'},
-    {'emoji': '😫', 'label': 'Tired'},
-    {'emoji': '😢', 'label': 'Sad'},
+    {'icon': Icons.sentiment_satisfied, 'label': 'Good'},
+    {'icon': Icons.sentiment_neutral, 'label': 'Calm'},
+    {'icon': Icons.sentiment_dissatisfied, 'label': 'Tired'},
+    {'icon': Icons.sentiment_very_dissatisfied, 'label': 'Sad'},
   ];
 
   @override
@@ -28,21 +34,27 @@ class _SelfCareScreenState extends State<SelfCareScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Self-Care 💖',
-              style: TextStyle(
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
-                color: widget.themeColor,
+            Container(
+              width: double.infinity,
+              height: 60,
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              decoration: BoxDecoration(
+                color: widget.theme.primary,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Text(
+                'Self-Care Dashboard',
+                style: TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                  color: widget.theme.text,
+                ),
               ),
             ),
             const SizedBox(height: 10),
             Text(
-              'How are you feeling today?',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey[600],
-              ),
+              'How are you feeling today ${widget.motherName}?',
+              style: TextStyle(fontSize: 20, color: widget.theme.text),
             ),
             const SizedBox(height: 30),
 
@@ -61,28 +73,31 @@ class _SelfCareScreenState extends State<SelfCareScreen> {
                     padding: const EdgeInsets.all(15),
                     decoration: BoxDecoration(
                       color: isSelected
-                          ? widget.themeColor.withValues(alpha: 0.3)
-                          : Colors.white,
+                          ? widget.theme.text.withValues(alpha: 0.3)
+                          : widget.theme.primary,
                       borderRadius: BorderRadius.circular(15),
                       border: Border.all(
                         color: isSelected
-                            ? widget.themeColor
-                            : Colors.grey.shade300,
+                            ? widget.theme.text
+                            : widget.theme.text.withValues(alpha: 0.3),
                         width: 2,
                       ),
                     ),
                     child: Column(
                       children: [
-                        Text(
-                          mood['emoji'] as String,
-                          style: const TextStyle(fontSize: 35),
+                        Icon(
+                          mood['icon'] as IconData,
+                          size: 35,
+                          color: widget.theme.text,
                         ),
                         const SizedBox(height: 5),
                         Text(
                           mood['label'] as String,
                           style: TextStyle(
                             fontSize: 12,
-                            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                            fontWeight: isSelected
+                                ? FontWeight.bold
+                                : FontWeight.normal,
                           ),
                         ),
                       ],
@@ -94,11 +109,13 @@ class _SelfCareScreenState extends State<SelfCareScreen> {
 
             const SizedBox(height: 30),
 
-            const Text(
+            Text(
               'Daily Reminders',
+
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
+                color: widget.theme.text,
               ),
             ),
             const SizedBox(height: 15),
@@ -106,36 +123,37 @@ class _SelfCareScreenState extends State<SelfCareScreen> {
             // Reminders List
             Expanded(
               child: ListView(
+                physics: const BouncingScrollPhysics(),
                 children: [
                   _buildReminderCard(
                     'Hydration',
                     'Drink a glass of water',
                     Icons.local_drink,
-                    widget.themeColor,
+                    widget.theme.text,
                   ),
                   _buildReminderCard(
                     'Nutrition',
                     'Have a healthy snack',
                     Icons.restaurant_menu,
-                    widget.themeColor.withValues(alpha: 0.8),
+                    widget.theme.text.withValues(alpha: 0.8),
                   ),
                   _buildReminderCard(
                     'Rest',
                     'Take a 15-minute break',
                     Icons.chair,
-                    widget.themeColor.withValues(alpha: 0.6),
+                    widget.theme.text.withValues(alpha: 0.6),
                   ),
                   _buildReminderCard(
                     'Movement',
                     'Gentle stretching',
                     Icons.self_improvement,
-                    widget.themeColor.withValues(alpha: 0.4),
+                    widget.theme.text.withValues(alpha: 0.4),
                   ),
                   _buildReminderCard(
                     'Connection',
                     'Call a friend or family',
                     Icons.phone,
-                    widget.themeColor.withValues(alpha: 0.5),
+                    widget.theme.text.withValues(alpha: 0.5),
                   ),
                 ],
               ),
@@ -143,27 +161,28 @@ class _SelfCareScreenState extends State<SelfCareScreen> {
 
             // Affirmation
             Container(
+              width: double.infinity,
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: widget.themeColor.withValues(alpha: 0.3),
+                color: widget.theme.card,
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Column(
                 children: [
                   Text(
-                    '✨ Daily Affirmation ✨',
+                    'Daily Affirmation',
                     style: TextStyle(
-                      color: widget.themeColor,
+                      color: widget.theme.icon,
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 10),
-                  const Text(
+                  Text(
                     '"I am strong, capable, and deserving of rest"',
-                    textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontSize: 16,
+                      color: widget.theme.icon,
+                      fontSize: 14,
                       fontStyle: FontStyle.italic,
                     ),
                   ),
@@ -176,12 +195,17 @@ class _SelfCareScreenState extends State<SelfCareScreen> {
     );
   }
 
-  Widget _buildReminderCard(String title, String description, IconData icon, Color color) {
+  Widget _buildReminderCard(
+    String title,
+    String description,
+    IconData icon,
+    Color color,
+  ) {
     return Container(
       margin: const EdgeInsets.only(bottom: 15),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: widget.theme.primary,
         borderRadius: BorderRadius.circular(15),
         boxShadow: [
           BoxShadow(
@@ -216,10 +240,7 @@ class _SelfCareScreenState extends State<SelfCareScreen> {
                 const SizedBox(height: 3),
                 Text(
                   description,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey[600],
-                  ),
+                  style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                 ),
               ],
             ),

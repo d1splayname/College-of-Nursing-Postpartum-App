@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'welcome_screen.dart';
+//import 'welcome_screen.dart';
 import 'privacy_and_terms.dart';
 
 import '../themes/app_themes.dart'; // For color themes

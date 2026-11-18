@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
-
+import '../themes/app_themes.dart';
 import '../auth_service.dart';
 import '../calendar_service.dart';
 
 class CalendarScreen extends StatefulWidget {
   final DateTime postpartumStart;
-  final Color themeColor;
+  final AppTheme theme;
 
   const CalendarScreen({
     super.key,
     required this.postpartumStart,
-    required this.themeColor,
+    required this.theme,
   });
 
   @override
@@ -95,6 +95,12 @@ class _CalendarScreenState extends State<CalendarScreen> {
     final result = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
+        backgroundColor: widget.theme.primary,
+        titleTextStyle: TextStyle(
+          color: widget.theme.text,
+          fontSize: 20,
+          fontWeight: FontWeight.w600,
+        ),
         title: const Text('Add appointment'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -102,20 +108,27 @@ class _CalendarScreenState extends State<CalendarScreen> {
             TextField(
               controller: titleController,
               autofocus: true,
-              decoration: const InputDecoration(labelText: 'Title'),
+              style: TextStyle(color: widget.theme.text),
+              decoration: _eventInputDecoration('Title'),
             ),
             TextField(
               controller: descriptionController,
-              decoration: const InputDecoration(labelText: 'Notes'),
+              style: TextStyle(color: widget.theme.text),
+              decoration: _eventInputDecoration('Notes'),
             ),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
+            style: TextButton.styleFrom(foregroundColor: widget.theme.text),
             child: const Text('Cancel'),
           ),
           FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: widget.theme.card,
+              foregroundColor: widget.theme.icon,
+            ),
             onPressed: () async {
               if (titleController.text.trim().isEmpty) return;
               try {
@@ -149,58 +162,93 @@ class _CalendarScreenState extends State<CalendarScreen> {
     if (result == true && mounted) setState(() {});
   }
 
+  InputDecoration _eventInputDecoration(String label) {
+    return InputDecoration(
+      labelText: label,
+      labelStyle: TextStyle(color: widget.theme.text.withValues(alpha: 0.7)),
+      enabledBorder: UnderlineInputBorder(
+        borderSide: BorderSide(color: widget.theme.text.withValues(alpha: 0.4)),
+      ),
+      focusedBorder: UnderlineInputBorder(
+        borderSide: BorderSide(color: widget.theme.card),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.only(bottom: 20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 24, 20, 12),
-              child: Row(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return SingleChildScrollView(
+            padding: const EdgeInsets.only(bottom: 20),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: constraints.maxHeight),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Expanded(
-                    child: Text(
-                      'Calendar',
-                      style: TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                        color: widget.themeColor,
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 8,
+                    ),
+                    child: Container(
+                      width: double.infinity,
+                      height: 60,
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      decoration: BoxDecoration(
+                        color: widget.theme.primary,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              'Calendar',
+                              style: TextStyle(
+                                fontSize: 32,
+                                fontWeight: FontWeight.bold,
+                                color: widget.theme.text,
+                              ),
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: _addEvent,
+                            tooltip: 'Add appointment',
+                            icon: Icon(
+                              Icons.add_circle,
+                              color: widget.theme.text,
+                              size: 30,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
-                  IconButton(
-                    onPressed: _addEvent,
-                    tooltip: 'Add appointment',
-                    icon: Icon(
-                      Icons.add_circle,
-                      color: widget.themeColor,
-                      size: 30,
+                  if (_isLoading) const LinearProgressIndicator(minHeight: 2),
+                  if (_loadError != null)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 8,
+                      ),
+                      child: Text(
+                        'Showing local milestones. $_loadError',
+                        style: TextStyle(
+                          color: widget.theme.text,
+                          fontSize: 12,
+                        ),
+                      ),
                     ),
-                  ),
+                  _buildMonthHeader(),
+                  _buildCalendarGrid(),
+                  const SizedBox(height: 12),
+                  _buildSelectedDay(),
                 ],
               ),
             ),
-            if (_isLoading) const LinearProgressIndicator(minHeight: 2),
-            if (_loadError != null)
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 8,
-                ),
-                child: Text(
-                  'Showing local milestones. $_loadError',
-                  style: TextStyle(color: Colors.grey[700], fontSize: 12),
-                ),
-              ),
-            _buildMonthHeader(),
-            _buildCalendarGrid(),
-            const SizedBox(height: 12),
-            _buildSelectedDay(),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
@@ -215,18 +263,22 @@ class _CalendarScreenState extends State<CalendarScreen> {
         children: [
           IconButton(
             onPressed: () => _changeMonth(-1),
-            icon: const Icon(Icons.chevron_left),
+            icon: Icon(Icons.chevron_left, color: widget.theme.text),
           ),
           Expanded(
             child: Text(
               monthName,
               textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: widget.theme.text,
+              ),
             ),
           ),
           IconButton(
             onPressed: () => _changeMonth(1),
-            icon: const Icon(Icons.chevron_right),
+            icon: Icon(Icons.chevron_right, color: widget.theme.text),
           ),
         ],
       ),
@@ -249,7 +301,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
           child: Text(
             label,
             style: TextStyle(
-              color: Colors.grey[600],
+              color: widget.theme.text.withValues(alpha: 0.7),
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -277,7 +329,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
           child: Container(
             margin: const EdgeInsets.all(3),
             decoration: BoxDecoration(
-              color: isSelected ? widget.themeColor : Colors.white,
+              color: isSelected ? widget.theme.icon : widget.theme.primary,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Column(
@@ -286,17 +338,13 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 Text(
                   '$day',
                   style: TextStyle(
-                    color: isSelected ? Colors.white : Colors.black87,
+                    color: widget.theme.text,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
                 const SizedBox(height: 4),
                 if (hasEvent)
-                  Icon(
-                    Icons.circle,
-                    size: 5,
-                    color: isSelected ? Colors.white : widget.themeColor,
-                  ),
+                  Icon(Icons.circle, size: 5, color: widget.theme.text),
               ],
             ),
           ),
@@ -313,7 +361,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
             crossAxisCount: 7,
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            childAspectRatio: 1.8,
+            childAspectRatio: 1.0, // was 1.8
             children: cells,
           ),
         ),
@@ -332,13 +380,17 @@ class _CalendarScreenState extends State<CalendarScreen> {
         children: [
           Text(
             formattedDate,
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: widget.theme.text,
+            ),
           ),
           const SizedBox(height: 12),
           if (_selectedEvents.isEmpty)
             Text(
               'No events scheduled.',
-              style: TextStyle(color: Colors.grey[600]),
+              style: TextStyle(color: widget.theme.text.withValues(alpha: 0.7)),
             )
           else
             ..._selectedEvents.map(_buildEventTile),
@@ -353,11 +405,11 @@ class _CalendarScreenState extends State<CalendarScreen> {
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: widget.theme.primary,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: widget.themeColor.withValues(alpha: 0.15),
+            color: widget.theme.text.withValues(alpha: 0.15),
             blurRadius: 8,
             offset: const Offset(0, 3),
           ),
@@ -367,7 +419,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
         children: [
           Icon(
             isMilestone ? Icons.favorite : Icons.event,
-            color: widget.themeColor,
+            color: widget.theme.card,
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -376,12 +428,17 @@ class _CalendarScreenState extends State<CalendarScreen> {
               children: [
                 Text(
                   event.title,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: widget.theme.text,
+                  ),
                 ),
                 if (event.description.isNotEmpty)
                   Text(
                     event.description,
-                    style: TextStyle(color: Colors.grey[700]),
+                    style: TextStyle(
+                      color: widget.theme.text.withValues(alpha: 0.75),
+                    ),
                   ),
               ],
             ),
@@ -389,7 +446,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
           if (event.source == 'personal' && event.id != null)
             IconButton(
               onPressed: () => _deleteEvent(event),
-              icon: const Icon(Icons.delete_outline),
+              icon: Icon(Icons.delete_outline, color: widget.theme.text),
               tooltip: 'Delete appointment',
             ),
         ],
