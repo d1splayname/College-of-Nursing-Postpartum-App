@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+
 import '../themes/app_themes.dart';
 import '../auth_service.dart';
 import '../calendar_service.dart';
+import '../notification_service.dart';
 
 class CalendarScreen extends StatefulWidget {
   final DateTime postpartumStart;
@@ -19,11 +21,16 @@ class CalendarScreen extends StatefulWidget {
 
 class _CalendarScreenState extends State<CalendarScreen> {
   final CalendarService _calendarService = CalendarService();
+  final NotificationService _notificationService = NotificationService.instance;
+  final TextEditingController _historySearchController =
+      TextEditingController();
   late DateTime _selectedDate;
   late DateTime _visibleMonth;
   late List<CalendarEvent> _events;
   bool _isLoading = true;
   String? _loadError;
+  String _historyFilter = 'all';
+  bool _showHistory = false;
 
   @override
   void initState() {
@@ -32,6 +39,12 @@ class _CalendarScreenState extends State<CalendarScreen> {
     _visibleMonth = DateTime(_selectedDate.year, _selectedDate.month);
     _events = _calendarService.localMilestones(widget.postpartumStart);
     _loadEvents();
+  }
+
+  @override
+  void dispose() {
+    _historySearchController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadEvents() async {
@@ -43,6 +56,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
         _isLoading = false;
         _loadError = null;
       });
+      await _notificationService.syncEvents(_events);
     } on ApiException catch (error) {
       if (!mounted) return;
       setState(() {
@@ -80,6 +94,35 @@ class _CalendarScreenState extends State<CalendarScreen> {
         date.day == _selectedDate.day;
   }).toList();
 
+  List<CalendarEvent> get _historyEvents {
+    final query = _historySearchController.text.trim().toLowerCase();
+    final filtered = _events.where((event) {
+      final matchesType =
+          _historyFilter == 'all' || event.eventType == _historyFilter;
+      final matchesSearch =
+          query.isEmpty ||
+          event.title.toLowerCase().contains(query) ||
+          event.description.toLowerCase().contains(query);
+      return matchesType && matchesSearch;
+    }).toList();
+    filtered.sort(
+      (first, second) => second.startTime.compareTo(first.startTime),
+    );
+    return filtered;
+  }
+
+  List<CalendarEvent> get _upcomingEvents {
+    final now = DateTime.now();
+    final cutoff = now.add(const Duration(days: 7));
+    return _events
+        .where(
+          (event) =>
+              event.startTime.isAfter(now) && event.startTime.isBefore(cutoff),
+        )
+        .toList()
+      ..sort((first, second) => first.startTime.compareTo(second.startTime));
+  }
+
   void _changeMonth(int amount) {
     setState(() {
       _visibleMonth = DateTime(
@@ -95,12 +138,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
     final result = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: widget.theme.primary,
-        titleTextStyle: TextStyle(
-          color: widget.theme.text,
-          fontSize: 20,
-          fontWeight: FontWeight.w600,
-        ),
         title: const Text('Add appointment'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -108,27 +145,20 @@ class _CalendarScreenState extends State<CalendarScreen> {
             TextField(
               controller: titleController,
               autofocus: true,
-              style: TextStyle(color: widget.theme.text),
-              decoration: _eventInputDecoration('Title'),
+              decoration: const InputDecoration(labelText: 'Title'),
             ),
             TextField(
               controller: descriptionController,
-              style: TextStyle(color: widget.theme.text),
-              decoration: _eventInputDecoration('Notes'),
+              decoration: const InputDecoration(labelText: 'Notes'),
             ),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            style: TextButton.styleFrom(foregroundColor: widget.theme.text),
             child: const Text('Cancel'),
           ),
           FilledButton(
-            style: FilledButton.styleFrom(
-              backgroundColor: widget.theme.card,
-              foregroundColor: widget.theme.icon,
-            ),
             onPressed: () async {
               if (titleController.text.trim().isEmpty) return;
               try {
@@ -146,6 +176,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 );
                 if (!context.mounted) return;
                 setState(() => _events = [..._events, event]);
+                await _notificationService.syncEvents(_events);
                 Navigator.pop(context, true);
               } on ApiException catch (error) {
                 if (!context.mounted) return;
@@ -162,93 +193,195 @@ class _CalendarScreenState extends State<CalendarScreen> {
     if (result == true && mounted) setState(() {});
   }
 
-  InputDecoration _eventInputDecoration(String label) {
-    return InputDecoration(
-      labelText: label,
-      labelStyle: TextStyle(color: widget.theme.text.withValues(alpha: 0.7)),
-      enabledBorder: UnderlineInputBorder(
-        borderSide: BorderSide(color: widget.theme.text.withValues(alpha: 0.4)),
-      ),
-      focusedBorder: UnderlineInputBorder(
-        borderSide: BorderSide(color: widget.theme.card),
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.only(bottom: 20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 24, 20, 12),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      'Calendar',
+                      style: TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                        color: widget.theme.text,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: _showNotifications,
+                    tooltip: 'Upcoming notifications',
+                    icon: Badge(
+                      isLabelVisible: _upcomingEvents.isNotEmpty,
+                      label: Text('${_upcomingEvents.length}'),
+                      child: Icon(
+                        Icons.notifications_outlined,
+                        color: widget.theme.text,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: _addEvent,
+                    tooltip: 'Add appointment',
+                    icon: Icon(
+                      Icons.add_circle,
+                      color: widget.theme.text,
+                      size: 30,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (_isLoading) const LinearProgressIndicator(minHeight: 2),
+            if (_loadError != null)
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 8,
+                ),
+                child: Text(
+                  'Showing local milestones. $_loadError',
+                  style: TextStyle(color: Colors.grey[700], fontSize: 12),
+                ),
+              ),
+            _buildMonthHeader(),
+            _buildCalendarGrid(),
+            const SizedBox(height: 12),
+            _buildSelectedDay(),
+            _buildHistory(),
+          ],
+        ),
       ),
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          return SingleChildScrollView(
-            padding: const EdgeInsets.only(bottom: 20),
-            child: ConstrainedBox(
-              constraints: BoxConstraints(minHeight: constraints.maxHeight),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
+  Widget _buildHistory() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          TextButton.icon(
+            onPressed: () => setState(() => _showHistory = !_showHistory),
+            icon: Icon(_showHistory ? Icons.expand_less : Icons.history),
+            label: Text(
+              _showHistory ? 'Hide history' : 'View activity history',
+            ),
+          ),
+          if (_showHistory) ...[
+            TextField(
+              controller: _historySearchController,
+              onChanged: (_) => setState(() {}),
+              decoration: const InputDecoration(
+                hintText: 'Search history',
+                prefixIcon: Icon(Icons.search),
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 10),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 8,
-                    ),
-                    child: Container(
-                      width: double.infinity,
-                      height: 60,
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      decoration: BoxDecoration(
-                        color: widget.theme.primary,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              'Calendar',
-                              style: TextStyle(
-                                fontSize: 32,
-                                fontWeight: FontWeight.bold,
-                                color: widget.theme.text,
-                              ),
-                            ),
-                          ),
-                          IconButton(
-                            onPressed: _addEvent,
-                            tooltip: 'Add appointment',
-                            icon: Icon(
-                              Icons.add_circle,
-                              color: widget.theme.text,
-                              size: 30,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  if (_isLoading) const LinearProgressIndicator(minHeight: 2),
-                  if (_loadError != null)
+                  for (final filter in const [
+                    ('all', 'All'),
+                    ('personal', 'Appointments'),
+                    ('activity', 'Activities'),
+                    ('postpartum_milestone', 'Milestones'),
+                  ])
                     Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 8,
-                      ),
-                      child: Text(
-                        'Showing local milestones. $_loadError',
-                        style: TextStyle(
-                          color: widget.theme.text,
-                          fontSize: 12,
-                        ),
+                      padding: const EdgeInsets.only(right: 8),
+                      child: FilterChip(
+                        label: Text(filter.$2),
+                        selected: _historyFilter == filter.$1,
+                        onSelected: (_) =>
+                            setState(() => _historyFilter = filter.$1),
                       ),
                     ),
-                  _buildMonthHeader(),
-                  _buildCalendarGrid(),
-                  const SizedBox(height: 12),
-                  _buildSelectedDay(),
                 ],
               ),
             ),
-          );
-        },
+            const SizedBox(height: 8),
+            if (_historyEvents.isEmpty)
+              Text(
+                'No matching history.',
+                style: TextStyle(color: Colors.grey[600]),
+              )
+            else
+              ..._historyEvents.map(_buildHistoryTile),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHistoryTile(CalendarEvent event) {
+    final date = MaterialLocalizations.of(
+      context,
+    ).formatMediumDate(event.startTime.toLocal());
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      leading: Icon(
+        event.eventType == 'activity'
+            ? Icons.check_circle_outline
+            : Icons.event,
+        color: widget.theme.primary,
+      ),
+      title: Text(event.title),
+      subtitle: Text('$date • ${event.eventType.replaceAll('_', ' ')}'),
+      trailing: event.source == 'personal' && event.id != null
+          ? IconButton(
+              onPressed: () => _deleteEvent(event),
+              icon: const Icon(Icons.delete_outline),
+              tooltip: 'Delete event',
+            )
+          : null,
+    );
+  }
+
+  Future<void> _showNotifications() async {
+    await _notificationService.requestPermission();
+    await _notificationService.syncEvents(_events);
+    final upcoming = _upcomingEvents;
+    await showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Upcoming notifications'),
+        content: upcoming.isEmpty
+            ? const Text('You have no events in the next 7 days.')
+            : Column(
+                mainAxisSize: MainAxisSize.min,
+                children: upcoming
+                    .map(
+                      (event) => ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        leading: Icon(
+                          Icons.notifications_active_outlined,
+                          color: widget.theme.primary,
+                        ),
+                        title: Text(event.title),
+                        subtitle: Text(
+                          MaterialLocalizations.of(
+                            context,
+                          ).formatMediumDate(event.startTime.toLocal()),
+                        ),
+                      ),
+                    )
+                    .toList(),
+              ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Close'),
+          ),
+        ],
       ),
     );
   }
@@ -263,22 +396,18 @@ class _CalendarScreenState extends State<CalendarScreen> {
         children: [
           IconButton(
             onPressed: () => _changeMonth(-1),
-            icon: Icon(Icons.chevron_left, color: widget.theme.text),
+            icon: const Icon(Icons.chevron_left),
           ),
           Expanded(
             child: Text(
               monthName,
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: widget.theme.text,
-              ),
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
           ),
           IconButton(
             onPressed: () => _changeMonth(1),
-            icon: Icon(Icons.chevron_right, color: widget.theme.text),
+            icon: const Icon(Icons.chevron_right),
           ),
         ],
       ),
@@ -301,7 +430,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
           child: Text(
             label,
             style: TextStyle(
-              color: widget.theme.text.withValues(alpha: 0.7),
+              color: Colors.grey[600],
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -329,7 +458,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
           child: Container(
             margin: const EdgeInsets.all(3),
             decoration: BoxDecoration(
-              color: isSelected ? widget.theme.icon : widget.theme.primary,
+              color: isSelected ? widget.theme.primary : Colors.white,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Column(
@@ -338,13 +467,17 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 Text(
                   '$day',
                   style: TextStyle(
-                    color: widget.theme.text,
+                    color: isSelected ? Colors.white : Colors.black87,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
                 const SizedBox(height: 4),
                 if (hasEvent)
-                  Icon(Icons.circle, size: 5, color: widget.theme.text),
+                  Icon(
+                    Icons.circle,
+                    size: 5,
+                    color: isSelected ? Colors.white : widget.theme.primary,
+                  ),
               ],
             ),
           ),
@@ -361,7 +494,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
             crossAxisCount: 7,
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            childAspectRatio: 1.0, // was 1.8
+            childAspectRatio: 1.8,
             children: cells,
           ),
         ),
@@ -380,17 +513,13 @@ class _CalendarScreenState extends State<CalendarScreen> {
         children: [
           Text(
             formattedDate,
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: widget.theme.text,
-            ),
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 12),
           if (_selectedEvents.isEmpty)
             Text(
               'No events scheduled.',
-              style: TextStyle(color: widget.theme.text.withValues(alpha: 0.7)),
+              style: TextStyle(color: Colors.grey[600]),
             )
           else
             ..._selectedEvents.map(_buildEventTile),
@@ -405,11 +534,11 @@ class _CalendarScreenState extends State<CalendarScreen> {
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: widget.theme.primary,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: widget.theme.text.withValues(alpha: 0.15),
+            color: widget.theme.primary.withValues(alpha: 0.15),
             blurRadius: 8,
             offset: const Offset(0, 3),
           ),
@@ -419,7 +548,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
         children: [
           Icon(
             isMilestone ? Icons.favorite : Icons.event,
-            color: widget.theme.card,
+            color: widget.theme.primary,
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -428,17 +557,12 @@ class _CalendarScreenState extends State<CalendarScreen> {
               children: [
                 Text(
                   event.title,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: widget.theme.text,
-                  ),
+                  style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
                 if (event.description.isNotEmpty)
                   Text(
                     event.description,
-                    style: TextStyle(
-                      color: widget.theme.text.withValues(alpha: 0.75),
-                    ),
+                    style: TextStyle(color: Colors.grey[700]),
                   ),
               ],
             ),
@@ -446,7 +570,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
           if (event.source == 'personal' && event.id != null)
             IconButton(
               onPressed: () => _deleteEvent(event),
-              icon: Icon(Icons.delete_outline, color: widget.theme.text),
+              icon: const Icon(Icons.delete_outline),
               tooltip: 'Delete appointment',
             ),
         ],
@@ -459,6 +583,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
       await _calendarService.deleteEvent(event.id!);
       if (!mounted) return;
       setState(() => _events.remove(event));
+      await _notificationService.cancelEvent(event);
     } on ApiException catch (error) {
       if (!mounted) return;
       ScaffoldMessenger.of(

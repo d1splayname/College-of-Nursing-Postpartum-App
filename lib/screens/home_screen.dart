@@ -6,6 +6,9 @@ import '../growth_tracker_screen.dart';
 import 'calendar_screen.dart';
 import 'settings_screens/settings_screen.dart';
 import '../themes/app_themes.dart';
+import '../calendar_service.dart';
+import '../notification_service.dart';
+import '../auth_service.dart';
 
 class HomeScreen extends StatefulWidget {
   final String motherName;
@@ -28,11 +31,89 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
   late AppTheme _currentTheme;
+  final CalendarService _calendarService = CalendarService();
+  final NotificationService _notificationService = NotificationService.instance;
+  List<CalendarEvent> _calendarEvents = [];
 
   @override
   void initState() {
     super.initState();
     _currentTheme = widget.theme;
+    _loadCalendarEvents();
+  }
+
+  Future<void> _loadCalendarEvents() async {
+    final localMilestones = _calendarService.localMilestones(widget.dueDate);
+    try {
+      final remoteEvents = await _calendarService.fetchEvents();
+      if (!mounted) return;
+      setState(() {
+        _calendarEvents = [...remoteEvents, ...localMilestones];
+      });
+      await _notificationService.syncEvents(_calendarEvents);
+    } on ApiException {
+      if (!mounted) return;
+      setState(() => _calendarEvents = localMilestones);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _calendarEvents = localMilestones);
+    }
+  }
+
+  List<CalendarEvent> get _upcomingEvents {
+    final now = DateTime.now();
+    final cutoff = now.add(const Duration(days: 7));
+    return _calendarEvents
+        .where(
+          (event) =>
+              event.startTime.isAfter(now) && event.startTime.isBefore(cutoff),
+        )
+        .toList()
+      ..sort((first, second) => first.startTime.compareTo(second.startTime));
+  }
+
+  Future<void> _showNotifications() async {
+    await _loadCalendarEvents();
+    if (!mounted) return;
+
+    await _notificationService.requestPermission();
+    await _notificationService.syncEvents(_calendarEvents);
+    if (!mounted) return;
+    final upcoming = _upcomingEvents;
+    await showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Upcoming notifications'),
+        content: upcoming.isEmpty
+            ? const Text('You have no events in the next 7 days.')
+            : Column(
+                mainAxisSize: MainAxisSize.min,
+                children: upcoming
+                    .map(
+                      (event) => ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        leading: Icon(
+                          Icons.notifications_active_outlined,
+                          color: _currentTheme.primary,
+                        ),
+                        title: Text(event.title),
+                        subtitle: Text(
+                          MaterialLocalizations.of(
+                            context,
+                          ).formatMediumDate(event.startTime.toLocal()),
+                        ),
+                      ),
+                    )
+                    .toList(),
+              ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
   }
 
   void _updateThemeColor(AppTheme newTheme) {
@@ -67,9 +148,33 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       extendBody: true,
-      body: Container(
-        decoration: BoxDecoration(gradient: theme.background),
-        child: screens[_selectedIndex],
+      body: Stack(
+        children: [
+          Container(
+            decoration: BoxDecoration(gradient: theme.background),
+            child: screens[_selectedIndex],
+          ),
+          if (_selectedIndex != 4)
+            Positioned(
+              top: 4,
+              right: 12,
+              child: IconButton(
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                onPressed: _showNotifications,
+                tooltip: 'Upcoming notifications',
+                icon: Badge(
+                  isLabelVisible: _upcomingEvents.isNotEmpty,
+                  label: Text('${_upcomingEvents.length}'),
+                  child: Icon(
+                    Icons.notifications_outlined,
+                    color: theme.text.withValues(alpha: 0.7),
+                    size: 21,
+                  ),
+                ),
+              ),
+            ),
+        ],
       ),
       bottomNavigationBar: SafeArea(
         child: Container(
