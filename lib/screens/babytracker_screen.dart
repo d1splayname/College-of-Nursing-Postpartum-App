@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import '../themes/app_themes.dart';
 
 import '../auth_service.dart';
@@ -57,18 +58,27 @@ class _BabyTrackerScreenState extends State<BabyTrackerScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Baby Tracker',
-              style: TextStyle(
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
-                color: widget.theme.text,
+            Container(
+              width: double.infinity,
+              height: 60,
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              decoration: BoxDecoration(
+                color: widget.theme.primary,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Text(
+                'Baby Tracker',
+                style: TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                  color: widget.theme.text,
+                ),
               ),
             ),
             const SizedBox(height: 10),
             Text(
               'Take care of your little one.',
-              style: TextStyle(fontSize: 16, color: widget.theme.text),
+              style: TextStyle(fontSize: 20, color: widget.theme.text),
             ),
             const SizedBox(height: 30),
 
@@ -79,19 +89,19 @@ class _BabyTrackerScreenState extends State<BabyTrackerScreen> {
                 _buildActionButton(
                   'Feed',
                   Icons.restaurant,
-                  widget.theme.card,
+                  widget.theme.text,
                   () => _addActivity('Feeding', Icons.restaurant),
                 ),
                 _buildActionButton(
                   'Diaper',
                   Icons.child_care,
-                  widget.theme.card.withValues(alpha: 0.7),
+                  widget.theme.text,
                   () => _addActivity('Diaper', Icons.child_care),
                 ),
                 _buildActionButton(
                   'Sleep',
                   Icons.bedtime,
-                  widget.theme.card.withValues(alpha: 0.5),
+                  widget.theme.text,
                   () => _addActivity('Sleep', Icons.bedtime),
                 ),
               ],
@@ -108,6 +118,8 @@ class _BabyTrackerScreenState extends State<BabyTrackerScreen> {
             // Activity List
             Expanded(
               child: ListView.builder(
+                physics: const BouncingScrollPhysics(),
+
                 itemCount: activities.length,
                 itemBuilder: (context, index) {
                   final activity = activities[index];
@@ -115,7 +127,7 @@ class _BabyTrackerScreenState extends State<BabyTrackerScreen> {
                     margin: const EdgeInsets.only(bottom: 15),
                     padding: const EdgeInsets.all(15),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: widget.theme.primary,
                       borderRadius: BorderRadius.circular(15),
                       boxShadow: [
                         BoxShadow(
@@ -184,26 +196,33 @@ class _BabyTrackerScreenState extends State<BabyTrackerScreen> {
     Color color,
     VoidCallback onTap,
   ) {
-    return GestureDetector(
-      onTap: _isLoggingActivity ? null : onTap,
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: color.withValues(alpha: _isLoggingActivity ? 0.15 : 0.3),
-          borderRadius: BorderRadius.circular(20),
+    return Material(
+      color: widget.theme.primary,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+        side: BorderSide(
+          color: widget.theme.text.withValues(alpha: 0.3),
+          width: 2,
         ),
-        child: Column(
-          children: [
-            Icon(icon, color: color, size: 35),
-            const SizedBox(height: 8),
-            Text(
-              label,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.grey[800],
+      ),
+      child: InkWell(
+        onTap: _isLoggingActivity ? null : onTap,
+        borderRadius: BorderRadius.circular(20),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            children: [
+              Icon(icon, color: color, size: 35),
+              const SizedBox(height: 8),
+              Text(
+                label,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: widget.theme.text,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -229,7 +248,7 @@ class _BabyTrackerScreenState extends State<BabyTrackerScreen> {
           'type': type,
           'time': 'Just now',
           'icon': icon,
-          'color': widget.theme.primary,
+          'color': widget.theme.card,
         });
       });
 
@@ -246,6 +265,16 @@ class _BabyTrackerScreenState extends State<BabyTrackerScreen> {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(error.message)));
+    } on http.ClientException {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Could not reach the server. $type was not added to Recent Activity.',
+          ),
+        ),
+      );
     } finally {
       if (mounted) {
         setState(() {
