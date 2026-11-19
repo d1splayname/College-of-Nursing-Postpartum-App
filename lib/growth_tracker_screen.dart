@@ -601,12 +601,12 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+      backgroundColor: widget.theme.primary,
       builder: (context) => Container(
         width: double.infinity,
         padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
         decoration: BoxDecoration(
-          color: _t.tertiary,
+          color: widget.theme.primary,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
         ),
         child: SafeArea(
@@ -712,25 +712,23 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
   Widget _buildHeader() {
     return Container(
       width: double.infinity,
-      height: 48,
-      alignment: Alignment.center,
+      height: 60,
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      alignment: Alignment.centerLeft,
       decoration: BoxDecoration(
-        color: _t.secondary,
-        borderRadius: BorderRadius.circular(18),
-        boxShadow: [
-          BoxShadow(
-            color: _t.primary.withValues(alpha: 0.5),
-            blurRadius: 12,
-            spreadRadius: 1,
-          ),
-        ],
+        color: _t.primary,
+        borderRadius: BorderRadius.circular(20),
       ),
-      child: Text(
-        _headerLabel,
-        style: GoogleFonts.poppins(
-          fontSize: 18,
-          fontWeight: FontWeight.w800,
-          color: _t.black,
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        alignment: Alignment.centerLeft,
+        child: Text(
+          _headerLabel,
+          style: GoogleFonts.poppins(
+            fontSize: 32,
+            fontWeight: FontWeight.bold,
+            color: _t.text,
+          ),
         ),
       ),
     );
@@ -782,7 +780,7 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
                   fontSize: 18,
                   fontWeight: FontWeight.w800,
                   height: 1.2,
-                  color: _t.black,
+                  color: _t.text,
                 ),
               ),
               const SizedBox(height: 10),

@@ -51,15 +51,12 @@ class _HomeScreenState extends State<HomeScreen> {
         theme: theme,
       ),
       BabyTrackerScreen(babyGender: widget.babyGender, theme: theme),
-      SelfCareScreen(themeColor: theme.primary),
+      SelfCareScreen(motherName: widget.motherName, theme: theme),
       GrowthTrackerScreen(
         theme: theme,
         babyBirthday: DateTime.now().subtract(const Duration(days: 63)),
       ),
-      CalendarScreen(
-        postpartumStart: widget.dueDate,
-        themeColor: theme.primary,
-      ),
+      CalendarScreen(postpartumStart: widget.dueDate, theme: theme),
       SettingsScreen(
         motherName: widget.motherName,
         babyGender: widget.babyGender,
@@ -69,53 +66,70 @@ class _HomeScreenState extends State<HomeScreen> {
     ];
 
     return Scaffold(
+      extendBody: true,
       body: Container(
         decoration: BoxDecoration(gradient: theme.background),
         child: screens[_selectedIndex],
       ),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          boxShadow: [
-            BoxShadow(
-              color: theme.primary.withValues(alpha: 0.2),
-              blurRadius: 10,
-              offset: const Offset(0, -5),
+      bottomNavigationBar: SafeArea(
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          decoration: BoxDecoration(
+            color: theme.primary,
+            borderRadius: BorderRadius.circular(35),
+            border: Border.all(
+              color: theme.text.withValues(alpha: 0.1),
+              width: 1,
             ),
-          ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(35),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  _buildNavItem(icon: Icons.home, index: 0),
+                  _buildNavItem(icon: Icons.child_friendly, index: 1),
+                  _buildNavItem(icon: Icons.favorite, index: 2),
+                  _buildNavItem(icon: Icons.park, index: 3),
+                  _buildNavItem(icon: Icons.calendar_month, index: 4),
+                  _buildNavItem(icon: Icons.settings, index: 5),
+                ],
+              ),
+            ),
+          ),
         ),
-        child: BottomNavigationBar(
-          currentIndex: _selectedIndex,
-          onTap: (index) {
-            setState(() {
-              _selectedIndex = index;
-            });
-          },
-          selectedItemColor: theme.card,
-          unselectedItemColor: Colors.grey,
-          type: BottomNavigationBarType.fixed,
-          items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.child_care),
-              label: 'Baby',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.favorite),
-              label: 'Self-Care',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.park),
-              label: 'Learning Together',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.calendar_month),
-              label: 'Calendar',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.settings),
-              label: 'Settings',
-            ),
-          ],
+      ),
+    );
+  }
+
+  Widget _buildNavItem({required IconData icon, required int index}) {
+    final isSelected = _selectedIndex == index;
+    final theme = _currentTheme;
+
+    return Expanded(
+      child: GestureDetector(
+        onTap: () {
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
+        behavior: HitTestBehavior.opaque,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: isSelected
+                ? theme.text.withValues(alpha: 0.15)
+                : Colors.transparent,
+            shape: BoxShape.circle,
+          ),
+          child: Icon(
+            icon,
+            color: isSelected ? theme.text : theme.text.withValues(alpha: 0.5),
+            size: 24,
+          ),
         ),
       ),
     );

@@ -7,7 +7,6 @@ import 'family_screen.dart';
 
 import '../../themes/app_themes.dart';
 
-
 // Settings Screen with Theme Changer
 class SettingsScreen extends StatelessWidget {
   final String motherName;
@@ -28,6 +27,7 @@ class SettingsScreen extends StatelessWidget {
     final Color themeColor = theme.primary;
     return SafeArea(
       child: SingleChildScrollView(
+        physics: const ClampingScrollPhysics(),
         padding: EdgeInsets.fromLTRB(
           20,
           20,
@@ -37,21 +37,28 @@ class SettingsScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Settings',
-              style: TextStyle(
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
-                color: theme.white,
+            Container(
+              width: double.infinity,
+              height: 60,
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              decoration: BoxDecoration(
+                color: theme.primary,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              alignment: Alignment.centerLeft,
+              child: Text(
+                'Settings',
+                style: TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                  color: theme.text,
+                ),
               ),
             ),
             const SizedBox(height: 10),
             Text(
               'Manage your account and preferences',
-              style: TextStyle(
-                fontSize: 16,
-                color: theme.white,
-              ),
+              style: TextStyle(fontSize: 16, color: theme.text),
             ),
             const SizedBox(height: 30),
 
@@ -72,46 +79,47 @@ class SettingsScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Profile',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
+                      color: theme.text,
                     ),
                   ),
                   const SizedBox(height: 15),
                   Row(
                     children: [
-                      Icon(Icons.person, color: theme.icon),
+                      Icon(Icons.person, color: theme.text),
                       const SizedBox(width: 10),
                       Text(
                         motherName,
-                        style: const TextStyle(fontSize: 16),
+                        style: TextStyle(fontSize: 16, color: theme.text),
                       ),
                     ],
                   ),
                   const SizedBox(height: 10),
                   Row(
                     children: [
-                      Icon(Icons.child_care, color: theme.icon),
+                      Icon(Icons.child_care, color: theme.text),
                       const SizedBox(width: 10),
                       Text(
                         'Baby Gender: $babyGender',
-                        style: const TextStyle(fontSize: 16),
+                        style: TextStyle(fontSize: 16, color: theme.text),
                       ),
                     ],
                   ),
                   const SizedBox(height: 10),
                   Row(
                     children: [
-                      Icon(Icons.house_outlined, color: theme.icon),
+                      Icon(Icons.family_restroom_outlined, color: theme.text),
                       const SizedBox(width: 10),
                       Text(
                         'Family Members:', // $familyMembers',
-                        style: const TextStyle(fontSize: 16),
+                        style: TextStyle(fontSize: 16, color: theme.text),
                       ),
                     ],
-                  ),                  
+                  ),
                 ],
               ),
             ),
@@ -124,18 +132,16 @@ class SettingsScreen extends StatelessWidget {
               'Your Family',
               'Manage accounts connected to your child',
               Icons.family_restroom_outlined,
-              theme.icon,
+              theme.text,
               () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => FamilyScreen(
-                      theme: theme,
-                    ),
+                    builder: (context) => FamilyScreen(theme: theme),
                   ),
                 );
               },
-            ),            
+            ),
 
             // Change Theme Color Option
             _buildSettingOption(
@@ -143,7 +149,7 @@ class SettingsScreen extends StatelessWidget {
               'Change Theme Color',
               'Choose your preferred color theme',
               Icons.palette_outlined,
-              theme.icon,
+              theme.text,
               () {
                 _showColorPicker(context);
               },
@@ -154,7 +160,7 @@ class SettingsScreen extends StatelessWidget {
               'Notifications',
               'Manage reminder settings',
               Icons.notifications_outlined,
-              theme.icon,
+              theme.text,
               () {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
@@ -170,14 +176,13 @@ class SettingsScreen extends StatelessWidget {
               'Privacy',
               'View privacy policy',
               Icons.lock_outline,
-              theme.icon,
+              theme.text,
               () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => TermsAndConditionsScreen(
-                      theme: theme,
-                    ),
+                    builder: (context) =>
+                        TermsAndConditionsScreen(theme: theme),
                   ),
                 );
               },
@@ -188,7 +193,7 @@ class SettingsScreen extends StatelessWidget {
               'Help & Support',
               'Get help and contact us',
               Icons.help_outline,
-              theme.icon,
+              theme.text,
               () {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
@@ -246,14 +251,11 @@ class SettingsScreen extends StatelessWidget {
                 icon: const Icon(Icons.logout),
                 label: const Text(
                   'Logout',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: theme.card,
-                  foregroundColor: theme.black,
+                  foregroundColor: theme.text,
                   padding: const EdgeInsets.symmetric(vertical: 18),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
@@ -306,7 +308,9 @@ class SettingsScreen extends StatelessWidget {
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(15),
                     border: Border.all(
-                      color: isSelected ? entry.value.primary : Colors.grey.shade300,
+                      color: isSelected
+                          ? entry.value.primary
+                          : Colors.grey.shade300,
                       width: isSelected ? 3 : 1,
                     ),
                   ),
@@ -325,7 +329,9 @@ class SettingsScreen extends StatelessWidget {
                         entry.key,
                         style: TextStyle(
                           fontSize: 16,
-                          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                          fontWeight: isSelected
+                              ? FontWeight.bold
+                              : FontWeight.normal,
                         ),
                       ),
                       const Spacer(),
@@ -383,9 +389,10 @@ class SettingsScreen extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
+                      color: theme.text,
                     ),
                   ),
                   const SizedBox(height: 3),
@@ -393,13 +400,17 @@ class SettingsScreen extends StatelessWidget {
                     subtitle,
                     style: TextStyle(
                       fontSize: 14,
-                      color: Colors.grey[600],
+                      color: theme.text.withValues(alpha: 0.7),
                     ),
                   ),
                 ],
               ),
             ),
-            Icon(Icons.arrow_forward_ios, color: Colors.grey[400], size: 18),
+            Icon(
+              Icons.arrow_forward_ios,
+              color: theme.text.withValues(alpha: 0.6),
+              size: 18,
+            ),
           ],
         ),
       ),

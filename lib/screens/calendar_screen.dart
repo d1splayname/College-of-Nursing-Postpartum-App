@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 
+import '../themes/app_themes.dart';
 import '../auth_service.dart';
 import '../calendar_service.dart';
 import '../notification_service.dart';
 
 class CalendarScreen extends StatefulWidget {
   final DateTime postpartumStart;
-  final Color themeColor;
+  final AppTheme theme;
 
   const CalendarScreen({
     super.key,
     required this.postpartumStart,
-    required this.themeColor,
+    required this.theme,
   });
 
   @override
@@ -210,7 +211,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       style: TextStyle(
                         fontSize: 32,
                         fontWeight: FontWeight.bold,
-                        color: widget.themeColor,
+                        color: widget.theme.text,
                       ),
                     ),
                   ),
@@ -222,7 +223,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       label: Text('${_upcomingEvents.length}'),
                       child: Icon(
                         Icons.notifications_outlined,
-                        color: widget.themeColor,
+                        color: widget.theme.text,
                       ),
                     ),
                   ),
@@ -231,7 +232,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                     tooltip: 'Add appointment',
                     icon: Icon(
                       Icons.add_circle,
-                      color: widget.themeColor,
+                      color: widget.theme.text,
                       size: 30,
                     ),
                   ),
@@ -331,7 +332,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
         event.eventType == 'activity'
             ? Icons.check_circle_outline
             : Icons.event,
-        color: widget.themeColor,
+        color: widget.theme.primary,
       ),
       title: Text(event.title),
       subtitle: Text('$date • ${event.eventType.replaceAll('_', ' ')}'),
@@ -363,7 +364,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                         contentPadding: EdgeInsets.zero,
                         leading: Icon(
                           Icons.notifications_active_outlined,
-                          color: widget.themeColor,
+                          color: widget.theme.primary,
                         ),
                         title: Text(event.title),
                         subtitle: Text(
@@ -457,7 +458,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
           child: Container(
             margin: const EdgeInsets.all(3),
             decoration: BoxDecoration(
-              color: isSelected ? widget.themeColor : Colors.white,
+              color: isSelected ? widget.theme.primary : Colors.white,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Column(
@@ -475,7 +476,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   Icon(
                     Icons.circle,
                     size: 5,
-                    color: isSelected ? Colors.white : widget.themeColor,
+                    color: isSelected ? Colors.white : widget.theme.primary,
                   ),
               ],
             ),
@@ -537,7 +538,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: widget.themeColor.withValues(alpha: 0.15),
+            color: widget.theme.primary.withValues(alpha: 0.15),
             blurRadius: 8,
             offset: const Offset(0, 3),
           ),
@@ -547,7 +548,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
         children: [
           Icon(
             isMilestone ? Icons.favorite : Icons.event,
-            color: widget.themeColor,
+            color: widget.theme.primary,
           ),
           const SizedBox(width: 12),
           Expanded(
