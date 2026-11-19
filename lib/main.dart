@@ -10,7 +10,7 @@ import 'auth_gate.dart';
 
 */
 
-import 'screens/login_screen.dart'; 
+import 'screens/login_screen.dart';
 import 'screens/welcome_screen.dart';
 import 'screens/setup_screen.dart';
 import 'screens/privacy_and_terms.dart';
@@ -21,10 +21,11 @@ import 'screens/dashboard_screen.dart';
 import 'screens/selfcare_screen.dart';
 import 'screens/babytracker_screen.dart';
 import 'screens/settings_screens/settings_screen.dart';
+import 'notification_service.dart';
 
-
-
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await NotificationService.instance.initialize();
   runApp(const MyApp());
 }
 

@@ -14,6 +14,7 @@ AppTheme _themeForProfile(SessionProfile? profile) {
   if (savedColor == DesertTheme.primary.value) return DesertTheme;
   return OceanTheme;
 }
+
 const _previewHomeEnabled = bool.fromEnvironment('PREVIEW_HOME');
 
 class AuthGate extends StatefulWidget {
@@ -31,7 +32,10 @@ class _AuthGateState extends State<AuthGate> {
     super.initState();
     _session = kDebugMode && _previewHomeEnabled
         ? Future.value(null)
-        : AuthService().restoreSession();
+        : AuthService().restoreSession().timeout(
+            const Duration(seconds: 2),
+            onTimeout: () => null,
+          );
   }
 
   @override
