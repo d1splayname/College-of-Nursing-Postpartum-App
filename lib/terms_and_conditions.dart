@@ -53,11 +53,11 @@ class _TermsAndConditionsScreenState extends State<TermsAndConditionsScreen> {
             ),
             const SizedBox(height: 4),
             Text(
-              'Last Updated: March 16, 2026',
+              'Last Updated: November 15, 2026',
               style: TextStyle(fontSize: 13, color: Colors.grey[700]),
             ),
             Text(
-              'Version: 1.0',
+              'Version: 2.0',
               style: TextStyle(fontSize: 13, color: Colors.grey[700]),
             ),
             const SizedBox(height: 25),

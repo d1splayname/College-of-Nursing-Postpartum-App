@@ -36,41 +36,41 @@ const OceanTheme = AppTheme(
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
         colors: [
-            Color(0xFF95E0E1),
-            Color(0xFFFFEAC2),
+            Color(0xff95e0e1),
+            Color(0xffffeaC2),
         ],
     ),
 
     // Primary colors (from lighter to darker)    
-    primary: Color(0xB3FFFFFF),     // white with 70% opacity
-    secondary: Color(0xFFFFEAC2),   // cream
-    tertiary: Color (0xFF95E0E1),   // teal
+    primary: Color(0xb3ffffff),     // white with 70% opacity
+    secondary: Color(0xfff2e7d0),   // cream
+    tertiary: Color (0xff95e0e1),   // teal
 
-    card: Color(0xFF1E4D58),        // dark teal
-    icon: Color(0xFFFFFFFF),        // white
-    text: Color(0xFF1A2B3C),        // navy
+    card: Color(0xff1e4d58),        // dark teal
+    icon: Color(0xffffffff),        // white
+    text: Color(0xff1A2b3c),        // navy
 );
 
 const SunriseTheme = AppTheme(
-    white: Color(0xff000000), // Swapped because the pink background is light
-    black: Color(0xffffffff), 
+    white: Color(0xffffffff),
+    black: Color(0xff000000), 
 
     background: LinearGradient(     // Pink gradient
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
         colors: [
-            Color(0xFFD9B8AE),
-            Color(0xFFF5D3DA),
+            Color(0xffd9b8ae),
+            Color(0xfff5d3da),
         ],
     ),
 
-    primary: Color(0xFFF3EEE8),     // White
-    secondary: Color(0xFFD9B8AE),   // Mauve
-    tertiary: Color (0xFFD9B8AE),   // Pink
+    primary: Color(0xb3f3eee8),     // white with 70% opacity
+    secondary: Color(0xffd9b8ae),   // Mauve?
+    tertiary: Color (0xffd9b8ae),   // Pink?
 
-    card: Color(0xFFB08A83),        // Slightly darker mauve
-    icon: Color(0xFF5E4A48),
-    text: Color(0xFF000000),        // Black
+    card: Color(0xffb08a83),        // Slightly darker mauve
+    icon: Color(0xff5e4a48),
+    text: Color(0xff000000),        // Black
 
 );
 
@@ -82,17 +82,17 @@ const DesertTheme = AppTheme(
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
         colors: [
-            Color(0xFFCE793A),
-            Color(0xFFF9CBA8),
+            Color(0xffcE793a),
+            Color(0xfff9cba8),
         ],
     ),
 
-    primary: Color(0xFFE6C96A),     // Mustard
-    secondary: Color(0xFFB64B12),   // Rust
-    tertiary: Color (0xFFCE793A),   // Orange
+    primary: Color(0xb3e6c96a),     // Mustard with 70% opacity
+    secondary: Color(0xffb64b12),   // Rust
+    tertiary: Color (0xffce793a),   // Orange
 
-    card: Color(0xFF9AA992),        // Sage
-    icon: Color(0xFF40E0D0),
-    text: Color(0xFF000000),        // Black
+    card: Color(0xFff4c6b3b),        // Dark Sage
+    icon: Color(0xff40e0d0),        // Teal
+    text: Color(0xff000000),        // Black
 
 );

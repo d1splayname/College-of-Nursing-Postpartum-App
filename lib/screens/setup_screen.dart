@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart'; 
+import 'package:google_fonts/google_fonts.dart'; 
+import '../themes/app_themes.dart';
+
 import 'welcome_screen.dart';
 import 'privacy_and_terms.dart';
 
-import '../themes/app_themes.dart'; // For color themes
-import 'package:flutter_svg/flutter_svg.dart'; // For icons
-import 'package:google_fonts/google_fonts.dart'; // For text
 
-// Setup Screen (Updated with gender and color selection)
 class SetupScreen extends StatefulWidget {
   const SetupScreen({super.key});
 
@@ -84,7 +84,7 @@ class _SetupScreenState extends State<SetupScreen> {
                   borderRadius: BorderRadius.circular(15),
                   borderSide: BorderSide.none,
                 ),
-                prefixIcon: Icon(Icons.person, color: theme.tertiary),
+                prefixIcon: Icon(Icons.person, color: theme.card),
               ),
             ),
             
@@ -111,7 +111,7 @@ class _SetupScreenState extends State<SetupScreen> {
                   borderRadius: BorderRadius.circular(15),
                   borderSide: BorderSide.none,
                 ),
-                prefixIcon: Icon(Icons.person_outline, color: theme.tertiary),
+                prefixIcon: Icon(Icons.person_outline, color: theme.card),
               ),
             ),
             const SizedBox(height:20),
@@ -138,7 +138,7 @@ class _SetupScreenState extends State<SetupScreen> {
                   borderRadius: BorderRadius.circular(15),
                   borderSide: BorderSide.none,
                 ),
-                prefixIcon: Icon(Icons.lock_outline, color: theme.tertiary),
+                prefixIcon: Icon(Icons.lock_outline, color: theme.card),
               ),
             ),
             const SizedBox(height:20),
@@ -164,7 +164,7 @@ class _SetupScreenState extends State<SetupScreen> {
                 ),
                 const SizedBox(width: 15),
                 Expanded(
-                  child: _buildGenderOption('I\'d prefer not to say', Icons.child_care, const Color(0xFFE6C96A)),
+                  child: _buildGenderOption('I\'d prefer not to say', Icons.child_care, const Color(0xFFD35400)),
                 ),
               ],
             ),
@@ -213,15 +213,15 @@ class _SetupScreenState extends State<SetupScreen> {
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.calendar_today, color: Color(0xFF9C88D9)),
+                    Icon(Icons.calendar_today, color: theme.card),
                     const SizedBox(width: 15),
                     Text(
                       _dueDate == null
                           ? 'Select date'
                           : '${_dueDate!.month}/${_dueDate!.day}/${_dueDate!.year}',
-                      style: TextStyle(
+                      style: GoogleFonts.poppins(
                         fontSize: 16,
-                        color: _dueDate == null ? Colors.grey : Colors.black87,
+                        color: _dueDate == null ? theme.black : theme.black,
                       ),
                     ),
                   ],
@@ -244,7 +244,7 @@ class _SetupScreenState extends State<SetupScreen> {
 
             Text(
               'Don\'t worry, you can change this later.',
-              style: TextStyle(
+              style: GoogleFonts.poppins(
                 fontSize: 14,
                 color: theme.primary,
                 fontStyle: FontStyle.italic,
@@ -304,7 +304,7 @@ class _SetupScreenState extends State<SetupScreen> {
 
                             Text(
                               entry.key,
-                              style: TextStyle(
+                              style: GoogleFonts.poppins(
                                 fontSize: 16,
                                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                               ),
@@ -336,7 +336,7 @@ class _SetupScreenState extends State<SetupScreen> {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text('Please fill in all fields',
-                        style: TextStyle(color: theme.black)),
+                        style: GoogleFonts.poppins(color: theme.black)),
                         backgroundColor: theme.primary,
                       ),
                     );
@@ -359,7 +359,7 @@ class _SetupScreenState extends State<SetupScreen> {
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: theme.card,
-                  foregroundColor: theme.black,
+                  foregroundColor: theme.white,
                   padding: const EdgeInsets.symmetric(vertical: 18),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
@@ -405,7 +405,7 @@ class _SetupScreenState extends State<SetupScreen> {
             const SizedBox(height: 8),
             Text(
               label,
-              style: TextStyle(
+              style: GoogleFonts.poppins(
                 fontSize: 14,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
               ),

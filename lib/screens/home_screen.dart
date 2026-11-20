@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import '../themes/app_themes.dart';
+
 import 'dashboard_screen.dart';
 import 'babytracker_screen.dart';
 import 'selfcare_screen.dart';
 import '../growth_tracker_screen.dart';
 import 'calendar_screen.dart';
 import 'settings_screens/settings_screen.dart';
-import '../themes/app_themes.dart';
+
 
 class HomeScreen extends StatefulWidget {
   final String motherName;
@@ -58,7 +60,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       CalendarScreen(
         postpartumStart: widget.dueDate,
-        themeColor: theme.primary,
+        theme: theme,
       ),
       SettingsScreen(
         motherName: widget.motherName,

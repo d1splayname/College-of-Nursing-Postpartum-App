@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import '../../themes/app_themes.dart';
+
 import '../../auth_service.dart';
 import '../login_screen.dart';
 import '../privacy_and_terms.dart';
 import '../../terms_and_conditions.dart';
 import 'family_screen.dart';
 
-import '../../themes/app_themes.dart';
 
-
-// Settings Screen with Theme Changer
 class SettingsScreen extends StatelessWidget {
   final String motherName;
   final String babyGender;
@@ -25,7 +25,7 @@ class SettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color themeColor = theme.primary;
+    final AppTheme theme = OceanTheme;
     return SafeArea(
       child: SingleChildScrollView(
         padding: EdgeInsets.fromLTRB(
@@ -39,16 +39,16 @@ class SettingsScreen extends StatelessWidget {
           children: [
             Text(
               'Settings',
-              style: TextStyle(
+              style: GoogleFonts.poppins(
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
-                color: theme.white,
+                color: theme.card,
               ),
             ),
             const SizedBox(height: 10),
             Text(
               'Manage your account and preferences',
-              style: TextStyle(
+              style: GoogleFonts.poppins(
                 fontSize: 16,
                 color: theme.white,
               ),
@@ -59,11 +59,11 @@ class SettingsScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: theme.secondary,
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
-                    color: themeColor.withValues(alpha: 0.2),
+                    color: theme.card.withValues(alpha: 0.2),
                     blurRadius: 10,
                     offset: const Offset(0, 5),
                   ),
@@ -72,9 +72,9 @@ class SettingsScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Profile',
-                    style: TextStyle(
+                    style: GoogleFonts.poppins(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
@@ -86,7 +86,7 @@ class SettingsScreen extends StatelessWidget {
                       const SizedBox(width: 10),
                       Text(
                         motherName,
-                        style: const TextStyle(fontSize: 16),
+                        style: GoogleFonts.poppins(fontSize: 16),
                       ),
                     ],
                   ),
@@ -97,7 +97,7 @@ class SettingsScreen extends StatelessWidget {
                       const SizedBox(width: 10),
                       Text(
                         'Baby Gender: $babyGender',
-                        style: const TextStyle(fontSize: 16),
+                        style: GoogleFonts.poppins(fontSize: 16),
                       ),
                     ],
                   ),
@@ -108,7 +108,7 @@ class SettingsScreen extends StatelessWidget {
                       const SizedBox(width: 10),
                       Text(
                         'Family Members:', // $familyMembers',
-                        style: const TextStyle(fontSize: 16),
+                        style: GoogleFonts.poppins(fontSize: 16),
                       ),
                     ],
                   ),                  
@@ -159,7 +159,7 @@ class SettingsScreen extends StatelessWidget {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: const Text('Notification settings coming soon!'),
-                    backgroundColor: theme.icon,
+                    backgroundColor: theme.black,
                   ),
                 );
               },
@@ -244,16 +244,16 @@ class SettingsScreen extends StatelessWidget {
                   );
                 },
                 icon: const Icon(Icons.logout),
-                label: const Text(
+                label: Text(
                   'Logout',
-                  style: TextStyle(
+                  style: GoogleFonts.poppins(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: theme.card,
-                  foregroundColor: theme.black,
+                  foregroundColor: theme.white,
                   padding: const EdgeInsets.symmetric(vertical: 18),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
@@ -303,7 +303,7 @@ class SettingsScreen extends StatelessWidget {
                   margin: const EdgeInsets.only(bottom: 10),
                   padding: const EdgeInsets.all(15),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: theme.secondary,
                     borderRadius: BorderRadius.circular(15),
                     border: Border.all(
                       color: isSelected ? entry.value.primary : Colors.grey.shade300,
@@ -323,7 +323,7 @@ class SettingsScreen extends StatelessWidget {
                       const SizedBox(width: 15),
                       Text(
                         entry.key,
-                        style: TextStyle(
+                        style: GoogleFonts.poppins(
                           fontSize: 16,
                           fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                         ),
@@ -383,7 +383,7 @@ class SettingsScreen extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(
+                    style: GoogleFonts.poppins(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
@@ -391,7 +391,7 @@ class SettingsScreen extends StatelessWidget {
                   const SizedBox(height: 3),
                   Text(
                     subtitle,
-                    style: TextStyle(
+                    style: GoogleFonts.poppins(
                       fontSize: 14,
                       color: Colors.grey[600],
                     ),

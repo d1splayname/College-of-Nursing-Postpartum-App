@@ -5,7 +5,7 @@ import 'themes/app_themes.dart'; // For color themes
 enum AgeRange { month1, months2to3, months4to6, months7to12 }
 
 enum TileCategory {
-  mindMoodEnergy('Mind, Mood, & Energy'),
+  mindMoodEnergy('Mind, Mood & Energy'),
   yourRecovery('Your recovery'),
   feedingNourishment('Feeding & Nourishment'),
   babyBasics('Baby Basics'),
@@ -780,7 +780,7 @@ class _GrowthTrackerScreenState extends State<GrowthTrackerScreen> {
                   fontSize: 18,
                   fontWeight: FontWeight.w800,
                   height: 1.2,
-                  color: _t.black,
+                  color: _t.text,
                 ),
               ),
               const SizedBox(height: 10),

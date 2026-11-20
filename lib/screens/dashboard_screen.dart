@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../themes/app_themes.dart';
-import 'package:google_fonts/google_fonts.dart'; // For text
 
-// Dashboard Screen (Updated with personalization and theme color)
+
 class DashboardScreen extends StatefulWidget {
   final String motherName;
   final String babyGender;

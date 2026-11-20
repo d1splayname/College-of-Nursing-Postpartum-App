@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart'; 
+import 'package:google_fonts/google_fonts.dart'; 
+import '../themes/app_themes.dart';
+
 import '../auth_service.dart';
 import 'welcome_screen.dart';
 import 'home_screen.dart';
 
-import '../themes/app_themes.dart';
-import 'package:flutter_svg/flutter_svg.dart'; 
-import 'package:google_fonts/google_fonts.dart'; 
 
-// Login Screen 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -93,7 +93,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Default theme (this screen only uses the default)
+    // Default theme (this screen only uses the default Ocean theme)
     
     return Scaffold(
       body: Container(
@@ -145,20 +145,20 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: Container(
                           margin: const EdgeInsets.only(top: 60),
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 100,
-                            vertical: 84,
+                            horizontal: 85,
+                            vertical: 64,
                           ),
                           decoration: BoxDecoration(
                             color: theme.primary,
-                            borderRadius: BorderRadius.circular(40),
+                            borderRadius: BorderRadius.circular(50),
                             border: Border.all(
-                              color: theme.secondary,
+                              color: theme.card.withOpacity(0.7),
                               width: 0.5,
                             ),
                             boxShadow: [
                               BoxShadow(
-                                color: theme.black.withOpacity(0.4),
-                                blurRadius: 50,
+                                color: theme.black.withOpacity(0.3),
+                                blurRadius: 20,
                                 offset: const Offset(0, 0),
                               ),
                             ],
@@ -180,15 +180,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         textAlign: TextAlign.center,
                         style: GoogleFonts.poppins(
                           fontSize: 16,
-                          fontStyle: FontStyle.italic,
-                          color: theme.black,
-                          shadows: [
-                            Shadow(
-                              color: theme.black.withOpacity(0.5),
-                              offset: const Offset(0,0),
-                              blurRadius: 20,
-                            ),
-                          ],
+                          color: Colors.grey[700],
                         ),
                       ),
                       const SizedBox(height: 100),
@@ -204,7 +196,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(17),
                             borderSide: BorderSide(
-                              color: theme.secondary,
+                              color: theme.card.withOpacity(0.2),
                               width: 1,
                             ),
                           ),
@@ -229,7 +221,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(17),
                             borderSide: BorderSide(
-                              color: theme.secondary,
+                              color: theme.card.withOpacity(0.2),
                               width: 1,
                             ),
                           ),
@@ -252,21 +244,21 @@ class _LoginScreenState extends State<LoginScreen> {
                             foregroundColor: Colors.white,
                             padding: const EdgeInsets.symmetric(vertical: 18),
                             side: BorderSide(
-                              color: theme.tertiary,
+                              color: theme.tertiary.withOpacity(0.2),
                               width: 0.5,
                             ),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30),
                             ),
                             elevation: 5,
-                            shadowColor: Colors.black,
+                            shadowColor: theme.black,
                           ),
                           child: Text(
                             _isLoading ? 'Signing In...' : 'Sign In',
-                            style: TextStyle(
+                            style: GoogleFonts.poppins(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
-                              color: theme.black,
+                              color: theme.white,
                             ),
                           ),
                         ),
@@ -286,10 +278,10 @@ class _LoginScreenState extends State<LoginScreen> {
                               vertical: 16,
                             ),
                           ),
-                          child: const Text(
+                          child: Text(
                             'Create an account',
-                            style: TextStyle(
-                              color: Color(0xFF000000),
+                            style: GoogleFonts.poppins(
+                              color: theme.black,
                             ),
                           ),
                         ),

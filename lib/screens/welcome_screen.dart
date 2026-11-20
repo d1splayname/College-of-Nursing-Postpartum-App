@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart'; 
+import 'package:flutter_svg/flutter_svg.dart'; 
+import '../themes/app_themes.dart'; 
+
 import 'login_screen.dart';
 import 'setup_screen.dart';
 
-import '../themes/app_themes.dart'; // For color themes
-import 'package:google_fonts/google_fonts.dart'; // For text
-// Welcome Screen 
+
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
 
@@ -14,7 +16,8 @@ class WelcomeScreen extends StatelessWidget {
     final AppTheme theme = OceanTheme;
 
     return Scaffold(
-      // Back button
+
+      // Back button to navigate to the login screen
       appBar: AppBar(
         backgroundColor: theme.tertiary,
         elevation: 0,
@@ -37,119 +40,156 @@ class WelcomeScreen extends StatelessWidget {
           gradient: theme.background,
         ),
         child: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(30.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const SizedBox(height: 24),
+          child: Stack(
+            children: [
 
-                // App Icon/Logo
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 64,
-                    vertical: 32,
-                  ),
-                  decoration: BoxDecoration(
-                    color: theme.primary,
-                    borderRadius: BorderRadius.circular(40),
-                    border: Border.all(
-                      color: theme.secondary,
-                      width: 0.5,
+              // Moon Icon
+              Positioned(
+                left: MediaQuery.of(context).size.width * 0.04,
+                top: MediaQuery.of(context).size.height * 0.1,
+                child: IgnorePointer(
+                  child: Opacity(
+                    opacity: 0.9,
+                    child: SvgPicture.asset(
+                      'assets/icons/moon.svg',
+                      width: (MediaQuery.of(context).size.width * 0.15)
+                          .clamp(0.0, 120.0),
                     ),
                   ),
-                  child: Column (
+                ),
+              ),
+
+              // Cloud Icon
+              Positioned(
+                right: MediaQuery.of(context).size.width * 0.2,
+                top: MediaQuery.of(context).size.height * 0.07,
+                child: IgnorePointer(
+                  child: Opacity(
+                    opacity: 0.9,
+                    child: SvgPicture.asset(
+                      'assets/icons/cloud.svg',
+                      width: (MediaQuery.of(context).size.width * 0.5)
+                          .clamp(0.0, 100.0),
+                    ),
+                  ),
+                ),
+              ),              
+              Positioned.fill(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(30.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.favorite, size: 80, color: theme.tertiary),
-                      const SizedBox(height: 40),
-                      Text(
-                        'Welcome to the \nFourth Trimester',
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.poppins(
-                          fontSize: 36,
-                          fontWeight: FontWeight.w600,
-                          color: theme.black,                              
+                      const SizedBox(height: 24),
+
+                      // Main Logo 
+                      Container(
+                        margin: const EdgeInsets.only(top: 40),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 85,
+                          vertical: 64,
+                        ),
+                        decoration: BoxDecoration(
+                          color: theme.primary,
+                          borderRadius: BorderRadius.circular(50),
+                          border: Border.all(
+                            color: theme.card.withOpacity(0.7),
+                            width: 0.5,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: theme.black.withOpacity(0.3),
+                              blurRadius: 20,
+                            ),
+                          ],                 
+                        ),
+                        child: Column (
+                          children: [
+                            Text(
+                              'Welcome to the \nFourth Trimester',
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.poppins(
+                                fontSize: 30,
+                                fontWeight: FontWeight.bold,
+                                color: theme.black,                              
+                              ),
+                            ),
+                          ],
                         ),
                       ),
+
+                      const SizedBox(height: 24),
+
+                      Text(
+                        'Your postpartum journey companion',
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey[700]),
+                      ),
+
+                      const SizedBox(height: 50),
+
+                      // Feature highlights
+                      _buildFeature(
+                        Icons.child_care,
+                        'Track baby\'s feeding, sleep & diapers',
+                      ),
+                      const SizedBox(height: 15),
+                      _buildFeature(
+                        Icons.emoji_people,
+                        'Monitor your mood & self-care',
+                      ),
+                      const SizedBox(height: 15),
+                      _buildFeature(Icons.favorite, 'Know what to expect'),
+                      const SizedBox(height: 15),
+                      _buildFeature(
+                        Icons.family_restroom_outlined,
+                        'Let the people you trust help care for baby',
+                      ),
+
+                      const SizedBox(height: 24),
+
+                      // Get Started Button
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const SetupScreen(),
+                              ),
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: theme.card,
+                            foregroundColor: theme.black,
+                            padding: const EdgeInsets.symmetric(vertical: 18),
+                            side: BorderSide(
+                              color: theme.tertiary.withOpacity(0.2),
+                              width: 0.5,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            elevation: 5,
+                            shadowColor: theme.black,
+                          ),
+                          child: Text(
+                            'Get Started',
+                            style: GoogleFonts.poppins(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: theme.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
                     ],
                   ),
                 ),
-
-                const SizedBox(height: 40),
-
-                const Text(
-                  'We\'re glad you\'re here.',
-                  style: TextStyle(
-                    fontSize: 36,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF9C88D9),
-                  ),
-                ),
-
-                const SizedBox(height: 15),
-
-                Text(
-                  'Your postpartum journey companion',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 18, color: Colors.grey[700]),
-                ),
-
-                const SizedBox(height: 50),
-
-                // Feature highlights
-                _buildFeature(
-                  Icons.child_care,
-                  'Track baby\'s feeding, sleep & diapers',
-                ),
-                const SizedBox(height: 15),
-                _buildFeature(
-                  Icons.emoji_people,
-                  'Monitor your mood & self-care',
-                ),
-                const SizedBox(height: 15),
-                _buildFeature(Icons.favorite, 'Know what to expect'),
-                const SizedBox(height: 15),
-                _buildFeature(
-                  Icons.family_restroom_outlined,
-                  'Let the people you trust help care for baby',
-                ),
-
-                const SizedBox(height: 24),
-
-                // Get Started Button
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const SetupScreen(),
-                        ),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: theme.card,
-                      foregroundColor: theme.black,
-                      padding: const EdgeInsets.symmetric(vertical: 18),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      elevation: 5,
-                    ),
-                    child: const Text(
-                      'Get Started',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 20),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
@@ -168,7 +208,7 @@ class WelcomeScreen extends StatelessWidget {
           ),
           child: Icon(
             icon,
-            color: theme.icon,
+            color: theme.card,
             size: 24,
           ),
         ),
@@ -176,7 +216,7 @@ class WelcomeScreen extends StatelessWidget {
         Expanded(
           child: Text(
             text,
-            style: TextStyle(
+            style: GoogleFonts.poppins(
               fontSize: 16,
               color: theme.text,
             ),

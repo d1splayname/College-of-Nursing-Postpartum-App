@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart'; 
+import '../themes/app_themes.dart';
 
 import '../auth_service.dart';
 import '../calendar_service.dart';
 
+
 class CalendarScreen extends StatefulWidget {
   final DateTime postpartumStart;
-  final Color themeColor;
+  final AppTheme theme;
 
   const CalendarScreen({
     super.key,
     required this.postpartumStart,
-    required this.themeColor,
+    required this.theme,
   });
 
   @override
@@ -18,6 +21,7 @@ class CalendarScreen extends StatefulWidget {
 }
 
 class _CalendarScreenState extends State<CalendarScreen> {
+  final AppTheme theme = OceanTheme;
   final CalendarService _calendarService = CalendarService();
   late DateTime _selectedDate;
   late DateTime _visibleMonth;
@@ -164,10 +168,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   Expanded(
                     child: Text(
                       'Calendar',
-                      style: TextStyle(
+                      style: GoogleFonts.poppins(
                         fontSize: 32,
                         fontWeight: FontWeight.bold,
-                        color: widget.themeColor,
+                        color: theme.card,
                       ),
                     ),
                   ),
@@ -176,7 +180,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                     tooltip: 'Add appointment',
                     icon: Icon(
                       Icons.add_circle,
-                      color: widget.themeColor,
+                      color: theme.card,
                       size: 30,
                     ),
                   ),
@@ -192,7 +196,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 ),
                 child: Text(
                   'Showing local milestones. $_loadError',
-                  style: TextStyle(color: Colors.grey[700], fontSize: 12),
+                  style: GoogleFonts.poppins(color: Colors.grey[700], fontSize: 12),
                 ),
               ),
             _buildMonthHeader(),
@@ -221,7 +225,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
             child: Text(
               monthName,
               textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold),
             ),
           ),
           IconButton(
@@ -248,8 +252,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
         (label) => Center(
           child: Text(
             label,
-            style: TextStyle(
-              color: Colors.grey[600],
+            style: GoogleFonts.poppins(
+              color: theme.black,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -277,7 +281,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
           child: Container(
             margin: const EdgeInsets.all(3),
             decoration: BoxDecoration(
-              color: isSelected ? widget.themeColor : Colors.white,
+              color: isSelected ? theme.tertiary : theme.white,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Column(
@@ -285,8 +289,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
               children: [
                 Text(
                   '$day',
-                  style: TextStyle(
-                    color: isSelected ? Colors.white : Colors.black87,
+                  style: GoogleFonts.poppins(
+                    color: isSelected ? theme.card: theme.black,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -295,7 +299,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   Icon(
                     Icons.circle,
                     size: 5,
-                    color: isSelected ? Colors.white : widget.themeColor,
+                    color: isSelected ? theme.white : theme.primary,
                   ),
               ],
             ),
@@ -332,13 +336,13 @@ class _CalendarScreenState extends State<CalendarScreen> {
         children: [
           Text(
             formattedDate,
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 12),
           if (_selectedEvents.isEmpty)
             Text(
               'No events scheduled.',
-              style: TextStyle(color: Colors.grey[600]),
+              style: GoogleFonts.poppins(color: Colors.grey[600]),
             )
           else
             ..._selectedEvents.map(_buildEventTile),
@@ -353,11 +357,11 @@ class _CalendarScreenState extends State<CalendarScreen> {
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: widget.themeColor.withValues(alpha: 0.15),
+            color: theme.secondary.withValues(alpha: 0.15),
             blurRadius: 8,
             offset: const Offset(0, 3),
           ),
@@ -367,7 +371,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
         children: [
           Icon(
             isMilestone ? Icons.favorite : Icons.event,
-            color: widget.themeColor,
+            color: theme.card,
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -376,12 +380,12 @@ class _CalendarScreenState extends State<CalendarScreen> {
               children: [
                 Text(
                   event.title,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                  style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
                 ),
                 if (event.description.isNotEmpty)
                   Text(
                     event.description,
-                    style: TextStyle(color: Colors.grey[700]),
+                    style: GoogleFonts.poppins(color: Colors.grey[700]),
                   ),
               ],
             ),
